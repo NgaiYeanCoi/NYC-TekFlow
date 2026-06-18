@@ -1,0 +1,32 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: tekflow-backend
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/tekflow?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true}
+    username: ${SPRING_DATASOURCE_USERNAME:root}
+    password: ${SPRING_DATASOURCE_PASSWORD:}
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 25MB
+
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+  global-config:
+    banner: false
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+
+tekflow:
+  jwt-secret: ${TEKFLOW_JWT_SECRET:change-this-local-development-secret-at-least-32-chars}
+  jwt-expires-minutes: ${TEKFLOW_JWT_EXPIRES_MINUTES:1440}
+  upload-dir: ${TEKFLOW_UPLOAD_DIR:./uploads}
+  admin-username: ${TEKFLOW_ADMIN_USERNAME:}
+  admin-password: ${TEKFLOW_ADMIN_PASSWORD:}
+

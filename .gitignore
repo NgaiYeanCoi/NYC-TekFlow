@@ -1,0 +1,30 @@
+# OS and editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# env and secrets
+.env
+.env.*
+!.env.example
+frontend/.env.local
+backend/.env
+
+# frontend
+frontend/.next/
+frontend/out/
+frontend/node_modules/
+frontend/bun.lockb
+frontend/tsconfig.tsbuildinfo
+frontend/.qa-*.png
+frontend/.turbo/
+
+# backend
+backend/target/
+backend/.mvn/wrapper/apache-maven-*/
+backend/uploads/
+
+# logs
+*.log
+logs/
