@@ -12,7 +12,7 @@
 | 失败响应 | 使用合适 HTTP 状态 + 非 200 业务 `code` |
 | 客户端判断 | 依赖 `code`、枚举字段和状态字段，不依赖中文 `msg` |
 | 列表分页 | `data={ items, total, page, pageSize }` |
-| 接口文档 | OpenAPI/Swagger，默认地址由后端工程和部署文档确认 |
+| 接口文档 | 后端运行时中文 OpenAPI/Swagger，默认地址 `http://localhost:8080/swagger-ui.html` |
 
 常见 HTTP 状态建议：
 

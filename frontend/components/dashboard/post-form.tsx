@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Field, FieldDescription, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { MarkdownRichEditor } from "@/components/dashboard/markdown-rich-editor";
 import { apiFetch } from "@/lib/api/client";
 import type { Post, PostPayload, PostStatus, PostType, Taxonomy, Visibility } from "@/types/tekflow";
 
@@ -56,9 +57,13 @@ export function PostForm({
       const next = { ...current, [key]: value };
       if (key === "type" && value === "school_notice") {
         next.visibility = "school";
+      } else if (key === "type" && next.visibility === "school") {
+        next.visibility = "private";
       }
       if (key === "visibility" && value === "school") {
         next.type = "school_notice";
+      } else if (key === "visibility" && next.type === "school_notice") {
+        next.type = "tech_note";
       }
       return next;
     });
@@ -92,12 +97,12 @@ export function PostForm({
 
   return (
     <form onSubmit={onSubmit} className="grid gap-6 xl:grid-cols-[1fr_320px]">
-      <Card>
-        <CardHeader>
+      <Card className="overflow-hidden">
+        <CardHeader className="border-b border-border">
           <CardTitle>{post ? "编辑内容" : "新建内容"}</CardTitle>
           <CardDescription>Markdown 正文、摘要和基础发布字段。</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="pt-5 md:pt-5">
           <FieldGroup>
             <Field>
               <FieldLabel htmlFor="title">标题</FieldLabel>
@@ -111,21 +116,18 @@ export function PostForm({
               <FieldLabel htmlFor="summary">摘要</FieldLabel>
               <Textarea id="summary" value={payload.summary} onChange={(event) => update("summary", event.target.value)} />
             </Field>
-            <Field>
-              <FieldLabel htmlFor="content">Markdown 正文</FieldLabel>
-              <Textarea id="content" className="min-h-[360px] font-mono" value={payload.content} onChange={(event) => update("content", event.target.value)} />
-            </Field>
-            {message ? <FieldDescription className="text-destructive">{message}</FieldDescription> : null}
+            <MarkdownRichEditor id="content" label="正文" value={payload.content ?? ""} onChange={(value) => update("content", value)} />
+            {message ? <FieldDescription className="text-destructive" role="alert">{message}</FieldDescription> : null}
           </FieldGroup>
         </CardContent>
       </Card>
 
       <div className="flex flex-col gap-6">
-        <Card>
-          <CardHeader>
+        <Card className="overflow-hidden">
+          <CardHeader className="border-b border-border">
             <CardTitle>发布设置</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="pt-5 md:pt-5">
             <FieldGroup>
               <Field>
                 <FieldLabel htmlFor="type">类型</FieldLabel>
@@ -185,7 +187,7 @@ export function PostForm({
                   {taxonomies.tags.map((tag) => {
                     const checked = payload.tagIds?.includes(tag.id) ?? false;
                     return (
-                      <label key={tag.id} className="flex items-center gap-2 rounded-md border border-border px-2 py-1 text-xs">
+                      <label key={tag.id} className="flex min-h-11 items-center gap-2 rounded-md border border-border px-3 py-2 text-xs">
                         <input
                           type="checkbox"
                           checked={checked}
@@ -210,19 +212,31 @@ export function PostForm({
         </Card>
 
         {payload.type === "school_notice" ? (
-          <Card>
-            <CardHeader>
+          <Card className="overflow-hidden">
+            <CardHeader className="border-b border-border">
               <CardTitle>School Notice</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="pt-5 md:pt-5">
               <FieldGroup>
                 <Field>
                   <FieldLabel htmlFor="course">课程</FieldLabel>
                   <Input id="course" value={payload.courseName ?? ""} onChange={(event) => update("courseName", event.target.value)} />
                 </Field>
                 <Field>
+                  <FieldLabel htmlFor="teacherName">老师</FieldLabel>
+                  <Input id="teacherName" value={payload.teacherName ?? ""} onChange={(event) => update("teacherName", event.target.value)} />
+                </Field>
+                <Field>
                   <FieldLabel htmlFor="eventDate">事项日期</FieldLabel>
                   <Input id="eventDate" type="date" value={payload.eventDate ?? ""} onChange={(event) => update("eventDate", event.target.value)} />
+                </Field>
+                <Field>
+                  <FieldLabel htmlFor="startTime">开始时间</FieldLabel>
+                  <Input id="startTime" type="time" value={payload.startTime ?? ""} onChange={(event) => update("startTime", event.target.value)} />
+                </Field>
+                <Field>
+                  <FieldLabel htmlFor="endTime">结束时间</FieldLabel>
+                  <Input id="endTime" type="time" value={payload.endTime ?? ""} onChange={(event) => update("endTime", event.target.value)} />
                 </Field>
                 <Field>
                   <FieldLabel htmlFor="deadline">截止时间</FieldLabel>
@@ -240,6 +254,12 @@ export function PostForm({
                     <option value="urgent">urgent</option>
                   </select>
                 </Field>
+                <Field>
+                  <label className="flex min-h-11 items-center gap-2 rounded-md border border-border px-3 py-2 text-sm">
+                    <input type="checkbox" checked={Boolean(payload.isNoticeDone)} onChange={(event) => update("isNoticeDone", event.target.checked)} />
+                    已完成
+                  </label>
+                </Field>
               </FieldGroup>
             </CardContent>
           </Card>
@@ -253,4 +273,3 @@ export function PostForm({
     </form>
   );
 }
-

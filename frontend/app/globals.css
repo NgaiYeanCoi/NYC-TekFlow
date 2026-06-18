@@ -7,20 +7,20 @@
   --card-foreground: #0f172a;
   --popover: #ffffff;
   --popover-foreground: #0f172a;
-  --primary: #5e6ad2;
+  --primary: #2563eb;
   --primary-foreground: #ffffff;
-  --secondary: #f1f5f9;
+  --secondary: #eaeff3;
   --secondary-foreground: #0f172a;
-  --muted: #f1f5f9;
+  --muted: #eef2f7;
   --muted-foreground: #64748b;
-  --accent: #eef2ff;
-  --accent-foreground: #3730a3;
-  --destructive: #ef4444;
+  --accent: #dbeafe;
+  --accent-foreground: #1d4ed8;
+  --destructive: #dc2626;
   --destructive-foreground: #ffffff;
   --border: #e2e8f0;
   --input: #cbd5e1;
-  --ring: #5e6ad2;
-  --success: #22c55e;
+  --ring: #2563eb;
+  --success: #16a34a;
   --warning: #f59e0b;
   --radius: 0.5rem;
 }
@@ -47,8 +47,8 @@
   --color-ring: var(--ring);
   --color-success: var(--success);
   --color-warning: var(--warning);
-  --font-sans: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --font-mono: "Geist Mono", "SFMono-Regular", Consolas, monospace;
+  --font-sans: var(--font-inter), "Microsoft YaHei UI", "PingFang SC", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono: var(--font-geist-mono), "Geist Mono", "SFMono-Regular", Consolas, monospace;
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -64,11 +64,46 @@ body {
   color: var(--foreground);
   font-family: var(--font-sans);
   letter-spacing: 0;
+  text-rendering: optimizeLegibility;
 }
 
 a {
   color: inherit;
   text-decoration: none;
+}
+
+button,
+a,
+input,
+select,
+textarea {
+  touch-action: manipulation;
+}
+
+button,
+select,
+a[href] {
+  cursor: pointer;
+}
+
+select {
+  min-height: 2.75rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--input);
+  background: var(--card);
+  color: var(--foreground);
+  font-size: 0.875rem;
+  outline: none;
+}
+
+select:focus-visible {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--ring) 22%, transparent);
+  border-color: var(--ring);
+}
+
+::selection {
+  background: #bfdbfe;
+  color: #0f172a;
 }
 
 svg[data-icon] {

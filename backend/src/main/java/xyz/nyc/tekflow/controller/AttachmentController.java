@@ -1,5 +1,9 @@
 package xyz.nyc.tekflow.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
@@ -18,6 +22,7 @@ import xyz.nyc.tekflow.service.AttachmentService;
 
 @RestController
 @RequestMapping("/api/v1")
+@Tag(name = "附件管理与受控访问", description = "管理员上传附件，以及按 Post 权限受控下载附件")
 public class AttachmentController {
     private final AttachmentService attachmentService;
 
@@ -26,24 +31,37 @@ public class AttachmentController {
     }
 
     @GetMapping("/admin/attachments")
+    @Operation(summary = "查询附件列表", description = "管理员查询所有附件元数据。")
+    @SecurityRequirement(name = "BearerAuth")
+    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "查询成功，返回附件元数据列表")
     public ApiResponse<List<AttachmentResponse>> list() {
         return ApiResponse.ok(attachmentService.list());
     }
 
     @PostMapping(value = "/admin/attachments", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ApiResponse<AttachmentResponse> upload(@RequestParam Long postId, @RequestParam MultipartFile file) {
+    @Operation(summary = "上传附件", description = "管理员上传附件并绑定到指定 Post。附件访问权限跟随所属 Post。")
+    @SecurityRequirement(name = "BearerAuth")
+    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "上传成功，返回附件元数据")
+    public ApiResponse<AttachmentResponse> upload(
+            @Parameter(description = "所属 Post ID") @RequestParam Long postId,
+            @Parameter(description = "待上传文件，单文件上限由后端配置控制") @RequestParam MultipartFile file
+    ) {
         return ApiResponse.ok(attachmentService.upload(postId, file));
     }
 
     @DeleteMapping("/admin/attachments/{id}")
-    public ApiResponse<Void> delete(@PathVariable Long id) {
+    @Operation(summary = "删除附件", description = "管理员按 ID 删除附件元数据和本地文件。")
+    @SecurityRequirement(name = "BearerAuth")
+    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "删除成功")
+    public ApiResponse<Void> delete(@Parameter(description = "附件 ID") @PathVariable Long id) {
         attachmentService.delete(id);
         return ApiResponse.ok(null);
     }
 
     @GetMapping("/attachments/{id}")
-    public ResponseEntity<Resource> download(@PathVariable Long id) {
+    @Operation(summary = "受控下载附件", description = "统一附件访问入口。后端根据所属 Post 的 status、visibility 和登录态判断是否允许下载。")
+    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "允许访问，返回文件流")
+    public ResponseEntity<Resource> download(@Parameter(description = "附件 ID") @PathVariable Long id) {
         return attachmentService.download(id);
     }
 }
-

@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 function Empty({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={cn("flex min-h-48 flex-col items-center justify-center gap-3 rounded-lg border border-dashed border-border bg-card p-8 text-center", className)}
+      className={cn("flex min-h-48 flex-col items-center justify-center gap-3 rounded-lg border border-dashed border-border bg-card/70 p-8 text-center", className)}
       {...props}
     />
   );
@@ -19,4 +19,3 @@ function EmptyDescription({ className, ...props }: React.HTMLAttributes<HTMLPara
 }
 
 export { Empty, EmptyDescription, EmptyTitle };
-

@@ -80,7 +80,7 @@ export function EntityManager({
   return (
     <div className="grid gap-6 lg:grid-cols-[360px_1fr]">
       <Card>
-        <CardHeader>
+        <CardHeader className="border-b border-border">
           <CardTitle>{editing ? "编辑" : "新建"} {title}</CardTitle>
           <CardDescription>{description}</CardDescription>
         </CardHeader>
@@ -118,23 +118,23 @@ export function EntityManager({
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader>
+      <Card className="overflow-hidden">
+        <CardHeader className="border-b border-border">
           <CardTitle>{title}列表</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-0">
           {list.length === 0 ? (
-            <Empty>
+            <Empty className="m-4">
               <EmptyTitle>暂无数据</EmptyTitle>
               <EmptyDescription>创建后会显示在这里。</EmptyDescription>
             </Empty>
           ) : (
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col">
               {list.map((item) => (
-                <div key={item.id} className="flex items-center justify-between gap-3 rounded-md border border-border px-3 py-2">
+                <div key={item.id} className="flex items-center justify-between gap-3 border-b border-border px-4 py-3 last:border-0 hover:bg-muted/40">
                   <div className="min-w-0">
                     <div className="truncate text-sm font-medium">{item.name}</div>
-                    <div className="truncate text-xs text-muted-foreground">/{item.slug}</div>
+                    <div className="truncate font-mono text-xs text-muted-foreground">/{item.slug}</div>
                   </div>
                   <div className="flex gap-2">
                     <Button type="button" size="sm" variant="outline" onClick={() => beginEdit(item)}>
@@ -155,4 +155,3 @@ export function EntityManager({
     </div>
   );
 }
-

@@ -4,8 +4,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 export default async function SettingsPage() {
   const session = await auth();
   return (
-    <div className="grid gap-6 lg:grid-cols-2">
-      <Card>
+    <div className="flex flex-col gap-6">
+      <div className="border-b border-border pb-5">
+        <h1 className="text-2xl font-semibold">Settings</h1>
+        <p className="mt-2 text-sm leading-6 text-muted-foreground">当前账号和 V1.0.0 系统边界摘要。</p>
+      </div>
+      <div className="grid gap-6 lg:grid-cols-2">
+      <Card className="overflow-hidden">
         <CardHeader>
           <CardTitle>账号信息</CardTitle>
           <CardDescription>当前登录管理员。</CardDescription>
@@ -16,7 +21,7 @@ export default async function SettingsPage() {
           <div>角色：{session?.user.role}</div>
         </CardContent>
       </Card>
-      <Card>
+      <Card className="overflow-hidden">
         <CardHeader>
           <CardTitle>系统配置摘要</CardTitle>
           <CardDescription>V1.0.0 固定边界。</CardDescription>
@@ -28,7 +33,7 @@ export default async function SettingsPage() {
           <div>附件访问：统一受控接口</div>
         </CardContent>
       </Card>
+      </div>
     </div>
   );
 }
-

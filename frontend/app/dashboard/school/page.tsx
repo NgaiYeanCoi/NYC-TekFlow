@@ -17,10 +17,10 @@ export default async function SchoolAdminPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-5">
         <div>
           <h1 className="text-2xl font-semibold">School Notice 管理</h1>
-          <p className="mt-2 text-sm text-muted-foreground">维护课程、截止时间、地点和优先级。</p>
+          <p className="mt-2 text-sm leading-6 text-muted-foreground">维护课程、截止时间、地点和优先级。</p>
         </div>
         <Link href="/dashboard/posts/new?type=school_notice" className={buttonVariants()}>
           新建 School Notice
@@ -30,4 +30,3 @@ export default async function SchoolAdminPage() {
     </div>
   );
 }
-

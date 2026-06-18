@@ -1,20 +1,24 @@
 "use client";
 
 import * as React from "react";
-import { UploadIcon } from "lucide-react";
+import { DownloadIcon, UploadIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
+import { Empty, EmptyDescription, EmptyTitle } from "@/components/ui/empty";
+import { Field, FieldDescription, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { apiFetch, apiUpload, attachmentUrl } from "@/lib/api/client";
 import { formatBytes, formatDateTime } from "@/lib/format";
-import type { Attachment } from "@/types/tekflow";
+import type { Attachment, Post } from "@/types/tekflow";
 
-export function AttachmentManager({ token, items }: { token: string; items: Attachment[] }) {
+export function AttachmentManager({ token, items, posts }: { token: string; items: Attachment[]; posts: Post[] }) {
   const [list, setList] = React.useState(items);
   const [postId, setPostId] = React.useState("");
   const [file, setFile] = React.useState<File | null>(null);
   const [message, setMessage] = React.useState("");
+  const [pending, setPending] = React.useState(false);
+  const [downloadingId, setDownloadingId] = React.useState<number | null>(null);
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   async function refresh() {
     setList(await apiFetch<Attachment[]>("/api/v1/admin/attachments", { token }));
@@ -24,25 +28,59 @@ export function AttachmentManager({ token, items }: { token: string; items: Atta
     event.preventDefault();
     setMessage("");
     if (!file || !postId) {
-      setMessage("请填写 Post ID 并选择文件");
+      setMessage("请选择所属 Post 并选择文件");
       return;
     }
     const formData = new FormData();
     formData.set("postId", postId);
     formData.set("file", file);
+    setPending(true);
     try {
       await apiUpload<Attachment>("/api/v1/admin/attachments", formData, token);
       setFile(null);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
       await refresh();
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "上传失败");
+    } finally {
+      setPending(false);
+    }
+  }
+
+  async function download(item: Attachment) {
+    setMessage("");
+    setDownloadingId(item.id);
+    try {
+      const response = await fetch(attachmentUrl(item.id), {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (!response.ok) {
+        throw new Error("附件下载失败");
+      }
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      anchor.href = url;
+      anchor.download = item.originalName;
+      document.body.appendChild(anchor);
+      anchor.click();
+      anchor.remove();
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "附件下载失败");
+    } finally {
+      setDownloadingId(null);
     }
   }
 
   return (
     <div className="grid gap-6 lg:grid-cols-[360px_1fr]">
       <Card>
-        <CardHeader>
+        <CardHeader className="border-b border-border">
           <CardTitle>上传附件</CardTitle>
           <CardDescription>附件权限跟随所属 Post，访问统一走受控接口。</CardDescription>
         </CardHeader>
@@ -50,38 +88,64 @@ export function AttachmentManager({ token, items }: { token: string; items: Atta
           <form onSubmit={submit}>
             <FieldGroup>
               <Field>
-                <FieldLabel htmlFor="postId">Post ID</FieldLabel>
-                <Input id="postId" value={postId} onChange={(event) => setPostId(event.target.value)} />
+                <FieldLabel htmlFor="postId">所属 Post</FieldLabel>
+                <select
+                  id="postId"
+                  className="h-10 rounded-md border border-input bg-card px-3 text-sm"
+                  value={postId}
+                  onChange={(event) => setPostId(event.target.value)}
+                  disabled={posts.length === 0}
+                >
+                  <option value="">选择一篇内容</option>
+                  {posts.map((post) => (
+                    <option key={post.id} value={post.id}>
+                      #{post.id} {post.title} ({post.visibility}/{post.status})
+                    </option>
+                  ))}
+                </select>
+                {posts.length === 0 ? <FieldDescription>后端可用且存在 Post 后可选择所属内容。</FieldDescription> : null}
               </Field>
               <Field>
                 <FieldLabel htmlFor="file">文件</FieldLabel>
-                <Input id="file" type="file" onChange={(event) => setFile(event.target.files?.[0] ?? null)} />
+                <Input id="file" ref={fileInputRef} type="file" onChange={(event) => setFile(event.target.files?.[0] ?? null)} />
               </Field>
-              {message ? <p className="text-sm text-destructive">{message}</p> : null}
-              <Button type="submit">
+              {message ? <p className="text-sm text-destructive" role="alert">{message}</p> : null}
+              <Button type="submit" disabled={pending || posts.length === 0}>
                 <UploadIcon data-icon="inline-start" />
-                上传
+                {pending ? "上传中" : "上传"}
               </Button>
             </FieldGroup>
           </form>
         </CardContent>
       </Card>
-      <Card>
-        <CardHeader>
+      <Card className="overflow-hidden">
+        <CardHeader className="border-b border-border">
           <CardTitle>附件列表</CardTitle>
         </CardHeader>
-        <CardContent className="flex flex-col gap-2">
-          {list.map((item) => (
-            <a key={item.id} href={attachmentUrl(item.id)} className="flex items-center justify-between gap-3 rounded-md border border-border px-3 py-2 text-sm hover:bg-accent">
-              <span className="truncate">{item.originalName}</span>
-              <span className="shrink-0 text-xs text-muted-foreground">
-                Post #{item.postId} / {formatBytes(item.size)} / {formatDateTime(item.createdAt)}
-              </span>
-            </a>
-          ))}
+        <CardContent className="flex flex-col p-0">
+          {list.length === 0 ? (
+            <Empty className="m-4">
+              <EmptyTitle>暂无附件</EmptyTitle>
+              <EmptyDescription>上传附件后会显示在这里。</EmptyDescription>
+            </Empty>
+          ) : (
+            list.map((item) => (
+              <div key={item.id} className="flex items-center justify-between gap-3 border-b border-border px-4 py-3 text-sm last:border-0">
+                <span className="min-w-0 truncate">{item.originalName}</span>
+                <div className="flex shrink-0 items-center gap-3">
+                  <span className="hidden text-xs text-muted-foreground md:inline">
+                    Post #{item.postId} / {formatBytes(item.size)} / {formatDateTime(item.createdAt)}
+                  </span>
+                  <Button type="button" variant="ghost" size="sm" onClick={() => download(item)} disabled={downloadingId === item.id}>
+                    <DownloadIcon data-icon="inline-start" />
+                    {downloadingId === item.id ? "下载中" : "下载"}
+                  </Button>
+                </div>
+              </div>
+            ))
+          )}
         </CardContent>
       </Card>
     </div>
   );
 }
-
