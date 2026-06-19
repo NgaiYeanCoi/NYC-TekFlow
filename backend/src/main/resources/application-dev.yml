@@ -1,0 +1,12 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/tekflow?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+    username: root
+    password: 10086
+
+tekflow:
+  jwt-secret: Dd6SyM26z9iXD/FfZgK/smTFX8JIH8wIgzKtjOi6InRmUpUkWndyHlKv5AXL8giT
+  jwt-expires-minutes: 1440
+  upload-dir: ./uploads
+  admin-username: admin
+  admin-password: admin123

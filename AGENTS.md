@@ -1,7 +1,6 @@
 # AGENTS.md
 
-本文件给代码代理提供本仓库的项目背景、工作约定和常用命令。内容以当前代码实际状态为准；当工程、脚本或技术栈后续落地后，必须同步更新本文件。
-
+本文件给代码代理提供本仓库的项目背景、工作约定和常用命令。
 ## 项目概述
 
 `NYC-TekFlow` 是 TekFlow 个人知识工作台的项目仓库。TekFlow 用于管理技术沉淀、运维手册、学校通知、学习资料和项目记录，并支持私有内容、公开知识库、学校事项板和链接访问四类内容边界。
@@ -24,7 +23,7 @@ UI 设计规范和前端目录约定详见 `docs/design/readme.md`。
 - 数据库：MySQL 8.0.45
 - 附件：服务端本地文件存储，数据库保存附件元数据
 
-构建工具：前端 Bun 包管理；后端 Maven Wrapper
+构建工具：前端 Bun 包管理；后端使用全局 Maven
 
 以上为已确认技术栈；仓库已创建 `frontend/` Next.js 工程和 `backend/` Spring Boot 工程，并维护 PRD、设计文档、API 摘要、数据库 schema 和最小演示 seed 文档。
 
@@ -41,22 +40,13 @@ bun run lint
 bun run typecheck
 ```
 
-Java 后端工程位于 `backend/`，优先使用项目内 Wrapper，避免依赖全局 Maven：
+Java 后端工程位于 `backend/`，默认使用全局 Maven。后端本地运行配置维护在 `backend/src/main/resources/application-dev.yml`，启动时显式启用 `dev` profile：
 
 ```bash
 cd backend
-./mvnw spring-boot:run
-./mvnw test
-./mvnw package
-```
-
-Windows 环境使用：
-
-```bash
-cd backend
-mvnw.cmd spring-boot:run
-mvnw.cmd test
-mvnw.cmd package
+mvn spring-boot:run -D spring-boot.run.profiles=dev
+mvn test
+mvn package
 ```
 
 数据库使用本机 MySQL 8.0.45；本仓库不使用 Docker。首次本地演示可导入：
@@ -279,8 +269,8 @@ bun run build
 
 ```bash
 cd backend
-mvnw.cmd test
-mvnw.cmd package
+mvn test
+mvn package
 ```
 
 ## 部署提示
@@ -289,7 +279,7 @@ mvnw.cmd package
 
 - 前端运行地址。
 - 后端运行端口。
-- MySQL 数据库名和环境变量名。
+- MySQL 数据库名和后端 `application-dev.yml` 配置项。
 - 附件上传目录。
 - 管理员初始化方式。
 - 受控附件接口访问策略；V1.0.0 不提供静态公开附件路径。

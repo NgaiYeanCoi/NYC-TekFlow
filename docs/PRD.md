@@ -638,7 +638,7 @@ flowchart LR
 | 前端认证 | NextAuth v5 beta Credentials，封装前端登录态、路由保护和后端 JWT 持久化 |
 | 后端语言 | Java 21.0.4 |
 | 后端框架 | Spring Boot 3.5.x，初始目标版本 3.5.15 |
-| 后端构建 | Maven Wrapper |
+| 后端构建 | Maven |
 | 后端数据访问 | MyBatis-Plus |
 | 后端鉴权 | Spring Security，使用 JWT 无状态认证、Filter Chain、JWT Filter 和 Method Security |
 | 后端 AOP | Spring AOP，用于接口日志、操作审计、性能监控和少量业务横切守卫 |

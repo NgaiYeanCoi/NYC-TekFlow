@@ -29,7 +29,7 @@
 
 ## 验证方式
 
-- 后端：`backend\mvnw.cmd test`、`backend\mvnw.cmd package`。
+- 后端：`cd backend` 后执行 `mvn test`、`mvn package`。
 - 前端：`bun install`、`bun run lint`、`bun run build`。
 - 安全检查：运行文档中的敏感信息扫描命令。
 - 手工验收：使用本机已有 MySQL，导入 `docs/schema.sql` 和 `docs/seed-demo.sql`，启动后端和前端，按 PRD 演示脚本验证登录、内容创建、公开展示、school 展示、unlisted 链接访问、private 隐藏和附件权限。
@@ -38,7 +38,7 @@
 
 已完成第一轮纵向闭环实施，并完成一次自检：
 
-- 后端 `mvnw.cmd test`、`mvnw.cmd package` 通过。
+- 后端测试和打包通过；当前后端命令约定已调整为全局 `mvn`。
 - 前端 `bun run typecheck`、`bun run lint`、`bun run build` 通过。
 - 前端 `http://127.0.0.1:3000` 可访问，首页、Wiki、School、登录页和未登录后台重定向已做浏览器验证。
 - `localhost:8080` 当前未检测到 TekFlow 后端监听；之前 Swagger 503 来自本机代理，不是后端服务。
@@ -52,8 +52,8 @@
 
 2026-06-19 追加：
 
-- 已更新 `DEPLOY.md`，补充根目录 `.env.local` 的创建、secret 生成、PowerShell 加载方式、MySQL 连接检查、前后端启动、联调检查和本地环境文件不提交检查。
-- 本地联调继续以 `.env.local` 为主配置文件；如果该文件无法连接 MySQL，则暂停后续联调并先修正数据库配置或初始化状态。
+- 已更新 `DEPLOY.md`，曾补充根目录 `.env.local` 的创建、secret 生成、PowerShell 加载方式、MySQL 连接检查、前后端启动、联调检查和本地环境文件不提交检查。
+- 后续本地配置约定已再次调整：根目录 `.env.local` 废弃，后端使用 `application-dev.yml`，前端使用 `frontend/.env.local`。
 
 2026-06-19 继续实施结果：
 
@@ -75,3 +75,9 @@
 - 已将后端运行时 OpenAPI/Swagger 改为中文为主，补充中文标题、接口分组、接口说明、参数说明、统一响应、分页和核心 DTO 字段说明。
 - 已修复 Dashboard 统计卡片数值区域、Login 表单字段区域与卡片分隔线过近的问题。
 - 已将 `/dashboard/posts` 的可见性、状态、类型筛选改为切换后立即更新 URL 并触发筛选，关键词仍通过提交触发查询。
+
+2026-06-19 本地配置约定调整：
+
+- 已废弃根目录 `.env.local` 作为联调主配置的做法。
+- 后端本地配置改为 Spring Boot 惯例的 `backend/src/main/resources/application-dev.yml`，本地启动使用 `mvn spring-boot:run -Dspring-boot.run.profiles=dev`。
+- 前端本地配置改为 `frontend/.env.local`，由 Next.js 自动读取，启动方式保持 `bun dev`。
