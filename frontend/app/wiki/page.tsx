@@ -18,8 +18,8 @@ export default async function WikiPage({ searchParams }: { searchParams?: Promis
       <main className="mx-auto grid max-w-7xl gap-8 px-4 py-10 lg:grid-cols-[280px_1fr]">
         <aside className="flex flex-col gap-4 lg:sticky lg:top-24 lg:self-start">
           <div>
-            <h1 className="text-2xl font-semibold">Wiki</h1>
-            <p className="mt-2 text-sm leading-6 text-muted-foreground">公开知识库只展示 public + published 内容。</p>
+            <h1 className="text-2xl font-semibold">公开知识库</h1>
+            <p className="mt-2 text-sm leading-6 text-muted-foreground">阅读整理后的技术笔记、学习资料和项目复盘。</p>
           </div>
           <form className="rounded-lg border border-border bg-card p-3">
             <label className="mb-2 block text-sm font-semibold" htmlFor="wiki-keyword">搜索</label>
@@ -32,7 +32,7 @@ export default async function WikiPage({ searchParams }: { searchParams?: Promis
           ) : (
             <Empty>
               <EmptyTitle>暂无公开内容</EmptyTitle>
-              <EmptyDescription>后端可用且存在 public published 内容后会显示在这里。</EmptyDescription>
+              <EmptyDescription>有公开文章后会显示在这里。</EmptyDescription>
             </Empty>
           )}
         </section>

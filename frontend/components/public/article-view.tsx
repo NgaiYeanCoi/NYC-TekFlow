@@ -4,7 +4,6 @@ import { DownloadIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { StatusBadge, VisibilityBadge } from "@/components/common/status-badge";
 import { attachmentUrl } from "@/lib/api/client";
 import { formatBytes, formatDateTime } from "@/lib/format";
 import type { Post } from "@/types/tekflow";
@@ -14,10 +13,9 @@ export function ArticleView({ post, unlisted = false }: { post: Post; unlisted?:
     <article className="mx-auto flex max-w-4xl flex-col gap-6 px-4 py-10">
       <div className="flex flex-col gap-4">
         <div className="flex flex-wrap items-center gap-2">
-          <VisibilityBadge value={post.visibility} />
-          <StatusBadge value={post.status} />
-          {unlisted ? <Badge variant="warning">Link access</Badge> : null}
+          {unlisted ? <Badge variant="warning">分享阅读</Badge> : null}
           {post.category ? <Badge variant="outline">{post.category.name}</Badge> : null}
+          {post.project ? <Badge variant="outline">{post.project.name}</Badge> : null}
         </div>
         <div className="flex flex-col gap-3">
           <h1 className="max-w-3xl text-3xl font-semibold leading-tight md:text-4xl">{post.title}</h1>
@@ -58,4 +56,3 @@ export function ArticleView({ post, unlisted = false }: { post: Post; unlisted?:
     </article>
   );
 }
-

@@ -28,7 +28,7 @@ export function AttachmentManager({ token, items, posts }: { token: string; item
     event.preventDefault();
     setMessage("");
     if (!file || !postId) {
-      setMessage("请选择所属 Post 并选择文件");
+      setMessage("请选择所属内容并选择文件");
       return;
     }
     const formData = new FormData();
@@ -82,13 +82,13 @@ export function AttachmentManager({ token, items, posts }: { token: string; item
       <Card>
         <CardHeader className="border-b border-border">
           <CardTitle>上传附件</CardTitle>
-          <CardDescription>附件权限跟随所属 Post，访问统一走受控接口。</CardDescription>
+          <CardDescription>选择所属内容后上传截图、文档或压缩包等资料。</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={submit}>
             <FieldGroup>
               <Field>
-                <FieldLabel htmlFor="postId">所属 Post</FieldLabel>
+                <FieldLabel htmlFor="postId">所属内容</FieldLabel>
                 <select
                   id="postId"
                   className="h-10 rounded-md border border-input bg-card px-3 text-sm"
@@ -99,11 +99,11 @@ export function AttachmentManager({ token, items, posts }: { token: string; item
                   <option value="">选择一篇内容</option>
                   {posts.map((post) => (
                     <option key={post.id} value={post.id}>
-                      #{post.id} {post.title} ({post.visibility}/{post.status})
+                      #{post.id} {post.title}
                     </option>
                   ))}
                 </select>
-                {posts.length === 0 ? <FieldDescription>后端可用且存在 Post 后可选择所属内容。</FieldDescription> : null}
+                {posts.length === 0 ? <FieldDescription>创建内容后可选择所属内容。</FieldDescription> : null}
               </Field>
               <Field>
                 <FieldLabel htmlFor="file">文件</FieldLabel>

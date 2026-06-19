@@ -7,7 +7,7 @@ export default async function SettingsPage() {
     <div className="flex flex-col gap-6">
       <div className="border-b border-border pb-5">
         <h1 className="text-2xl font-semibold">Settings</h1>
-        <p className="mt-2 text-sm leading-6 text-muted-foreground">当前账号和 V1.0.0 系统边界摘要。</p>
+        <p className="mt-2 text-sm leading-6 text-muted-foreground">当前账号和工作台使用概览。</p>
       </div>
       <div className="grid gap-6 lg:grid-cols-2">
       <Card className="overflow-hidden">
@@ -23,14 +23,14 @@ export default async function SettingsPage() {
       </Card>
       <Card className="overflow-hidden">
         <CardHeader>
-          <CardTitle>系统配置摘要</CardTitle>
-          <CardDescription>V1.0.0 固定边界。</CardDescription>
+          <CardTitle>工作台概览</CardTitle>
+          <CardDescription>当前版本的基础使用信息。</CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-2 text-sm text-muted-foreground">
           <div>附件上限：20MB</div>
           <div>主题：浅色主题</div>
-          <div>认证：NextAuth Credentials + 后端 JWT</div>
-          <div>附件访问：统一受控接口</div>
+          <div>写作：Markdown 内容整理</div>
+          <div>事项：学校事项提醒</div>
         </CardContent>
       </Card>
       </div>

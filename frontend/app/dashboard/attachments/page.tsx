@@ -18,7 +18,7 @@ export default async function AttachmentsPage() {
     <div className="flex flex-col gap-6">
       <div className="border-b border-border pb-5">
         <h1 className="text-2xl font-semibold">附件管理</h1>
-        <p className="mt-2 text-sm leading-6 text-muted-foreground">上传、查看并通过受控接口访问附件。</p>
+        <p className="mt-2 text-sm leading-6 text-muted-foreground">上传、归档并查看与内容关联的附件资料。</p>
       </div>
       <AttachmentManager token={token} items={items} posts={posts} />
     </div>

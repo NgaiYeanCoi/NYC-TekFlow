@@ -62,8 +62,8 @@ export function DashboardShell({ user, children }: { user: UserSummary; children
         </nav>
         <div className="hidden border-t border-border p-4 text-xs leading-5 text-muted-foreground lg:block">
           <div className="rounded-lg bg-muted p-3">
-            <div className="font-semibold text-foreground">Visibility Guard</div>
-            <p className="mt-1">公开入口由后端按 status、visibility 和 deleted_at 兜底过滤。</p>
+            <div className="font-semibold text-foreground">发布提醒</div>
+            <p className="mt-1">公开前确认内容已脱敏；学校事项请补齐日期、截止时间和课程信息。</p>
           </div>
         </div>
       </aside>

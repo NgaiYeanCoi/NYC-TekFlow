@@ -7,9 +7,9 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 
 const navItems = [
-  { href: "/wiki", label: "Wiki", icon: BookOpenIcon },
-  { href: "/school", label: "School", icon: GraduationCapIcon },
-  { href: "/login", label: "Dashboard", icon: LayoutDashboardIcon },
+  { href: "/wiki", label: "知识库", icon: BookOpenIcon },
+  { href: "/school", label: "学校事项", icon: GraduationCapIcon },
+  { href: "/login", label: "管理后台", icon: LayoutDashboardIcon },
 ];
 
 export function PublicShell({ children }: { children: ReactNode }) {
@@ -22,7 +22,7 @@ export function PublicShell({ children }: { children: ReactNode }) {
             <span className="flex size-9 items-center justify-center rounded-md bg-primary text-sm font-bold text-primary-foreground shadow-[0_8px_24px_rgba(37,99,235,0.18)]">T</span>
             <span className="flex flex-col leading-tight">
               <span>TekFlow</span>
-              <span className="text-xs font-normal text-muted-foreground">Knowledge Workspace</span>
+              <span className="text-xs font-normal text-muted-foreground">个人知识库</span>
             </span>
           </Link>
           <nav className="hidden items-center gap-1 sm:flex">

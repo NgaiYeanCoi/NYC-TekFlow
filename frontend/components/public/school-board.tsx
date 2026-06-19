@@ -27,17 +27,17 @@ export function SchoolBoard({ posts }: { posts: Post[] }) {
     <div className="mx-auto flex max-w-7xl flex-col gap-8 px-4 py-10">
       <div className="flex flex-col justify-between gap-4 border-b border-border pb-5 md:flex-row md:items-end">
         <div>
-          <h1 className="text-3xl font-semibold">School Board</h1>
+          <h1 className="text-3xl font-semibold">学校事项</h1>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">按截止时间、今日事项和本周安排查看学校通知。</p>
         </div>
         <div className="rounded-md border border-border bg-card px-3 py-2 text-sm text-muted-foreground">
-          {posts.length} notices
+          {posts.length} 项事项
         </div>
       </div>
       {posts.length === 0 ? (
         <Empty>
           <EmptyTitle>暂无学校事项</EmptyTitle>
-          <EmptyDescription>后端可用且存在 school published notice 后会显示在这里。</EmptyDescription>
+          <EmptyDescription>有课程、作业或考试安排后会显示在这里。</EmptyDescription>
         </Empty>
       ) : (
         <div className="flex flex-col gap-8">
