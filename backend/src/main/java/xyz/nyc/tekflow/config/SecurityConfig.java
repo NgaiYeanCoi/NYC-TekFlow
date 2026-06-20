@@ -28,7 +28,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/auth/login").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/v1/wiki/**", "/api/v1/school/**", "/api/v1/share/**", "/api/v1/attachments/**").permitAll()
+                        .requestMatchers("/api/v1/share/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/wiki/**", "/api/v1/school/**", "/api/v1/attachments/**").permitAll()
                         .requestMatchers("/api/v1/admin/**", "/api/v1/auth/me").authenticated()
                         .anyRequest().permitAll()
                 )
@@ -46,4 +47,3 @@ public class SecurityConfig {
         return configuration.getAuthenticationManager();
     }
 }
-

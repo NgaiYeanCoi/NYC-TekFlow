@@ -60,7 +60,7 @@ export default async function HomePage() {
           <section className="grid gap-4 md:grid-cols-3">
             <EntryPanel href="/wiki" title="公开知识库" description="阅读技术笔记、教程、SOP 和项目复盘。" icon={BookOpenIcon} />
             <EntryPanel href="/school" title="学校事项" description="查看课程、作业、考试和截止时间。" icon={GraduationCapIcon} />
-            <EntryPanel href="/login" title="管理后台" description="登录后整理文章、事项、草稿和附件。" icon={LayoutDashboardIcon} />
+            <EntryPanel href="/dashboard" title="管理后台" description="登录后整理文章、事项、草稿和附件。" icon={LayoutDashboardIcon} />
           </section>
 
           <section className="grid gap-6 lg:grid-cols-[0.85fr_1.15fr]">

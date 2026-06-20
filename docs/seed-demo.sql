@@ -175,6 +175,34 @@ VALUES
 ON DUPLICATE KEY UPDATE
   post_id = VALUES(post_id);
 
+INSERT INTO post_shares (
+  id,
+  post_id,
+  token,
+  access_code_hash,
+  expires_at,
+  status,
+  access_count,
+  attachment_download_count
+)
+VALUES (
+  1,
+  3,
+  'demo-unlisted-share-token',
+  NULL,
+  DATE_ADD(CURRENT_TIMESTAMP, INTERVAL 7 DAY),
+  'active',
+  0,
+  0
+)
+ON DUPLICATE KEY UPDATE
+  token = VALUES(token),
+  access_code_hash = VALUES(access_code_hash),
+  expires_at = VALUES(expires_at),
+  status = VALUES(status),
+  revoked_at = NULL,
+  updated_at = CURRENT_TIMESTAMP;
+
 INSERT INTO attachments (id, post_id, filename, original_name, mime_type, size, path)
 VALUES
   (1, 1, 'demo-public-note.txt', 'demo-public-note.txt', 'text/plain', 160, '../docs/demo-attachments/demo-public-note.txt'),

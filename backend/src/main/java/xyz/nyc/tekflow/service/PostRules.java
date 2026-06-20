@@ -57,8 +57,6 @@ public final class PostRules {
                 && post.getDeletedAt() == null
                 && "published".equals(post.getStatus())
                 && ("public".equals(post.getVisibility())
-                || "school".equals(post.getVisibility())
-                || "unlisted".equals(post.getVisibility()));
+                || "school".equals(post.getVisibility()));
     }
 }
-

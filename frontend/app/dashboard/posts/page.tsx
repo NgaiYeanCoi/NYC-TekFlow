@@ -1,7 +1,10 @@
+import Link from "next/link";
+import { RotateCcwIcon } from "lucide-react";
 import { auth } from "@/auth";
 import { PaginationControls } from "@/components/common/pagination-controls";
 import { PostFilters } from "@/components/dashboard/post-filters";
 import { PostTable } from "@/components/dashboard/post-table";
+import { buttonVariants } from "@/components/ui/button";
 import { firstParam, readSearchParams } from "@/lib/route";
 import { getAdminPosts, getTaxonomies } from "@/lib/api/queries";
 
@@ -34,11 +37,12 @@ export default async function PostsPage({ searchParams }: { searchParams?: Promi
     }).catch(() => ({ items: [], total: 0, page: 1, pageSize })),
     getTaxonomies(token).catch(() => ({ categories: [], tags: [], projects: [] })),
   ]);
+  const hasFilters = Boolean(keyword || status || visibility || type || categoryId || projectId || tagId);
 
   return (
     <div className="flex flex-col gap-6">
       <div className="border-b border-border pb-5">
-        <h1 className="text-2xl font-semibold">Posts</h1>
+        <h1 className="text-2xl font-semibold">内容</h1>
         <p className="mt-2 text-sm leading-6 text-muted-foreground">管理全部状态和可见性的内容。</p>
       </div>
       <PostFilters
@@ -51,7 +55,19 @@ export default async function PostsPage({ searchParams }: { searchParams?: Promi
         tagId={tagId}
         taxonomies={taxonomies}
       />
-      <PostTable posts={posts.items} />
+      <PostTable
+        posts={posts.items}
+        emptyTitle={hasFilters ? "没有匹配内容" : "暂无内容"}
+        emptyDescription={hasFilters ? "当前筛选条件下没有内容，重置筛选后可查看全部内容。" : "创建第一篇内容后会出现在这里。"}
+        emptyAction={
+          hasFilters ? (
+            <Link href="/dashboard/posts" className={buttonVariants({ variant: "outline", size: "sm" })}>
+              <RotateCcwIcon data-icon="inline-start" />
+              重置筛选
+            </Link>
+          ) : undefined
+        }
+      />
       <PaginationControls
         pathname="/dashboard/posts"
         params={{ keyword, status, visibility, type, categoryId, projectId, tagId, pageSize }}

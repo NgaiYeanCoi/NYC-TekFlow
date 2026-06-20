@@ -104,6 +104,38 @@ export type LoginResponse = {
   user: UserSummary;
 };
 
+export type PostShare = {
+  postId: number;
+  token?: string | null;
+  status: "none" | "active" | "revoked";
+  active: boolean;
+  hasAccessCode: boolean;
+  expiresAt?: string | null;
+  expired: boolean;
+  accessCount: number;
+  attachmentDownloadCount: number;
+  lastAccessedAt?: string | null;
+  revokedAt?: string | null;
+  createdAt?: string | null;
+  updatedAt?: string | null;
+};
+
+export type ShareMeta = {
+  status: "active" | "revoked" | "expired";
+  requiresAccessCode: boolean;
+  expiresAt?: string | null;
+  expired: boolean;
+  revoked: boolean;
+  title: string;
+};
+
+export type PostSharePayload = {
+  accessCode?: string;
+  clearAccessCode?: boolean;
+  expiresAt?: string | null;
+  neverExpires?: boolean;
+};
+
 export type PostPayload = {
   title: string;
   slug?: string;

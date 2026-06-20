@@ -4,11 +4,22 @@ import type { ReactNode } from "react";
 import { DownloadIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { ShareAttachmentDownload } from "@/components/public/share-attachment-download";
 import { attachmentUrl } from "@/lib/api/client";
 import { formatBytes, formatDateTime } from "@/lib/format";
 import type { Post } from "@/types/tekflow";
 
-export function ArticleView({ post, unlisted = false, details }: { post: Post; unlisted?: boolean; details?: ReactNode }) {
+export function ArticleView({
+  post,
+  unlisted = false,
+  details,
+  shareAccess,
+}: {
+  post: Post;
+  unlisted?: boolean;
+  details?: ReactNode;
+  shareAccess?: { token: string; accessCode?: string };
+}) {
   const content = normalizeMarkdown(post.content);
 
   return (
@@ -42,19 +53,23 @@ export function ArticleView({ post, unlisted = false, details }: { post: Post; u
           <section className="flex flex-col gap-3 rounded-lg border border-border bg-background p-4">
             <h2 className="text-base font-semibold">附件</h2>
             <div className="flex flex-col gap-2">
-              {post.attachments.map((attachment) => (
-                <a
-                  key={attachment.id}
-                  href={attachmentUrl(attachment.id)}
-                  className="flex items-center justify-between gap-3 rounded-md border border-border px-3 py-2 text-sm hover:bg-accent"
-                >
-                  <span className="truncate">{attachment.originalName}</span>
-                  <span className="flex shrink-0 items-center gap-2 text-muted-foreground">
-                    {formatBytes(attachment.size)}
-                    <DownloadIcon data-icon="inline-end" />
-                  </span>
-                </a>
-              ))}
+              {post.attachments.map((attachment) =>
+                shareAccess ? (
+                  <ShareAttachmentDownload key={attachment.id} attachment={attachment} token={shareAccess.token} accessCode={shareAccess.accessCode} />
+                ) : (
+                  <a
+                    key={attachment.id}
+                    href={attachmentUrl(attachment.id)}
+                    className="flex items-center justify-between gap-3 rounded-md border border-border px-3 py-2 text-sm hover:bg-accent"
+                  >
+                    <span className="truncate">{attachment.originalName}</span>
+                    <span className="flex shrink-0 items-center gap-2 text-muted-foreground">
+                      {formatBytes(attachment.size)}
+                      <DownloadIcon data-icon="inline-end" />
+                    </span>
+                  </a>
+                ),
+              )}
             </div>
           </section>
         ) : null}

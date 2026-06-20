@@ -118,6 +118,26 @@ CREATE TABLE IF NOT EXISTS post_tags (
   CONSTRAINT fk_post_tags_tag FOREIGN KEY (tag_id) REFERENCES tags(id) ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+CREATE TABLE IF NOT EXISTS post_shares (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  post_id BIGINT NOT NULL,
+  token VARCHAR(96) NOT NULL,
+  access_code_hash VARCHAR(255) NULL,
+  expires_at DATETIME NULL,
+  status VARCHAR(20) NOT NULL DEFAULT 'active',
+  access_count BIGINT NOT NULL DEFAULT 0,
+  attachment_download_count BIGINT NOT NULL DEFAULT 0,
+  last_accessed_at DATETIME NULL,
+  revoked_at DATETIME NULL,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  deleted_at DATETIME NULL,
+  CONSTRAINT uk_post_shares_token UNIQUE (token),
+  CONSTRAINT fk_post_shares_post FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE RESTRICT,
+  CONSTRAINT ck_post_shares_status CHECK (status IN ('active', 'revoked')),
+  CONSTRAINT ck_post_shares_counts CHECK (access_count >= 0 AND attachment_download_count >= 0)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 CREATE TABLE IF NOT EXISTS attachments (
   id BIGINT PRIMARY KEY AUTO_INCREMENT,
   post_id BIGINT NOT NULL,
@@ -138,4 +158,6 @@ CREATE INDEX idx_posts_category ON posts (category_id);
 CREATE INDEX idx_posts_project ON posts (project_id);
 CREATE INDEX idx_posts_deadline ON posts (deadline_at);
 CREATE INDEX idx_posts_event_date ON posts (event_date);
+CREATE INDEX idx_post_shares_post ON post_shares (post_id, status, deleted_at);
+CREATE INDEX idx_post_shares_expires ON post_shares (expires_at);
 CREATE INDEX idx_attachments_post ON attachments (post_id, deleted_at);

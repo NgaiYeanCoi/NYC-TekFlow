@@ -63,5 +63,14 @@ class PostRulesTest {
 
         assertEquals("done", PostRules.calculateNoticeStatus(post));
     }
-}
 
+    @Test
+    void unlistedIsNotDirectVisitorVisible() {
+        Post post = new Post();
+        post.setType("study_note");
+        post.setVisibility("unlisted");
+        post.setStatus("published");
+
+        assertEquals(false, PostRules.isVisitorVisible(post));
+    }
+}

@@ -91,3 +91,19 @@
 - 已补齐 `/wiki`、`/school` 和 `/dashboard/posts` 的 URL search params 筛选与分页。
 - 已新增 `docs/demo-attachments/` 小型演示附件，并更新 `docs/seed-demo.sql` 的附件路径，使 seed 后的 public、school、unlisted 附件可通过受控接口下载，private 附件仍随 Post 权限拒绝游客访问。
 - 已清理首页预览中偏内部实现栈的访客可见文案。
+
+2026-06-20 Dashboard 返回首页与 UX 闭环：
+
+- 已补齐公开区与后台区的导航闭环：公共首页和 header 进入 `/dashboard`，后台顶栏提供返回首页入口。
+- 已将后台侧栏、概览页、内容列表、学校事项管理、设置页和 Post 表单中的主要用户可见英文改为中文。
+- 已新增前端枚举显示映射，Post 类型、可见性、状态和学校事项优先级展示中文 label，API payload 和 URL query 仍保持原枚举值。
+- 已为新建/编辑内容页增加返回内容列表入口，编辑已发布的 public、school、unlisted 内容时提供对应展示页入口。
+- 已增强后台内容表格和附件空状态：筛选无结果可重置筛选，无内容可新建内容，无附件可触发上传。
+
+2026-06-20 受控链接分享补齐：
+
+- 将 unlisted 分享从 `/share/[slug]` 升级为独立 `post_shares` token 模型，支持可选访问码、默认 7 天过期、撤销、重新生成 token、成功访问计数和附件下载计数。
+- 已新增后台分享管理接口：查询、开启/更新、撤销、重新生成；新增公开分享门禁接口和打开分享接口。
+- 已调整 unlisted 附件访问：普通 `/api/v1/attachments/{id}` 不再直接允许游客访问 unlisted 附件，分享页通过 `/api/v1/share/posts/{token}/attachments/{id}` 校验 token、访问码、过期和撤销状态后下载。
+- 已新增后台编辑页“链接分享”卡片和内容表格“分享”入口，分享页改为 token 门禁页，支持访问码输入、过期/撤销提示和分享附件下载。
+- 已更新 `docs/schema.sql`、`docs/seed-demo.sql`、`docs/API.md`、`docs/PRD.md`，并新增 `docs/migrations/2026-06-20-post-shares.sql` 供已有本地数据库升级。

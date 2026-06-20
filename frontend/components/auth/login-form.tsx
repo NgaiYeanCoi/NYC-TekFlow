@@ -42,17 +42,17 @@ export function LoginForm() {
           <ShieldCheckIcon data-icon="inline-start" />
         </div>
         <CardTitle>登录 TekFlow</CardTitle>
-        <CardDescription>使用管理员 username 和密码进入后台。</CardDescription>
+        <CardDescription>使用管理员用户名和密码进入后台。</CardDescription>
       </CardHeader>
       <CardContent className="pt-5 md:pt-5">
         <form onSubmit={onSubmit}>
           <FieldGroup>
             <Field>
-              <FieldLabel htmlFor="username">Username</FieldLabel>
+              <FieldLabel htmlFor="username">用户名</FieldLabel>
               <Input id="username" autoComplete="username" value={username} onChange={(event) => setUsername(event.target.value)} />
             </Field>
             <Field>
-              <FieldLabel htmlFor="password">Password</FieldLabel>
+              <FieldLabel htmlFor="password">密码</FieldLabel>
               <div className="relative">
                 <Input id="password" className="pr-11" type={showPassword ? "text" : "password"} autoComplete="current-password" value={password} onChange={(event) => setPassword(event.target.value)} />
                 <button

@@ -6,22 +6,29 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import java.time.LocalDate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import xyz.nyc.tekflow.common.ApiResponse;
 import xyz.nyc.tekflow.common.PageResponse;
 import xyz.nyc.tekflow.dto.PostDtos.PostResponse;
+import xyz.nyc.tekflow.dto.PostShareDtos.ShareMetaResponse;
+import xyz.nyc.tekflow.dto.PostShareDtos.ShareOpenRequest;
 import xyz.nyc.tekflow.service.PostService;
+import xyz.nyc.tekflow.service.PostShareService;
 
 @RestController
 @RequestMapping("/api/v1")
 @Tag(name = "公开内容访问", description = "游客访问 Wiki、School Board 和 unlisted 链接内容的接口")
 public class PublicPostController {
     private final PostService postService;
+    private final PostShareService postShareService;
 
-    public PublicPostController(PostService postService) {
+    public PublicPostController(PostService postService, PostShareService postShareService) {
         this.postService = postService;
+        this.postShareService = postShareService;
     }
 
     @GetMapping("/wiki/posts")
@@ -45,11 +52,21 @@ public class PublicPostController {
         return ApiResponse.ok(postService.wikiPost(slug));
     }
 
-    @GetMapping("/share/posts/{slug}")
-    @Operation(summary = "获取 unlisted 分享内容", description = "通过 slug 访问 visibility=unlisted 且已发布的内容详情，不进入公开列表。")
-    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "查询成功，返回 unlisted 内容详情")
-    public ApiResponse<PostResponse> sharePost(@Parameter(description = "Post slug") @PathVariable String slug) {
-        return ApiResponse.ok(postService.sharePost(slug));
+    @GetMapping("/share/posts/{token}/meta")
+    @Operation(summary = "获取分享门禁信息", description = "通过分享 token 查询是否需要访问码、是否过期或撤销；不计入访问次数。")
+    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "查询成功，返回分享门禁信息")
+    public ApiResponse<ShareMetaResponse> shareMeta(@Parameter(description = "分享 token") @PathVariable String token) {
+        return ApiResponse.ok(postShareService.meta(token));
+    }
+
+    @PostMapping("/share/posts/{token}/open")
+    @Operation(summary = "打开分享内容", description = "校验 token、访问码、过期时间和撤销状态，成功后计入访问次数并返回内容详情。")
+    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "校验成功，返回分享内容详情")
+    public ApiResponse<PostResponse> openShare(
+            @Parameter(description = "分享 token") @PathVariable String token,
+            @RequestBody(required = false) ShareOpenRequest request
+    ) {
+        return ApiResponse.ok(postShareService.open(token, request));
     }
 
     @GetMapping("/school/notices")

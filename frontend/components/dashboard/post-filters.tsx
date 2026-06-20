@@ -3,6 +3,7 @@
 import type { FormEvent } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Input } from "@/components/ui/input";
+import { postTypeLabels, statusLabels, visibilityLabels } from "@/lib/post-display";
 import type { PostStatus, PostType, Taxonomy, Visibility } from "@/types/tekflow";
 
 const visibilityOptions: Visibility[] = ["private", "public", "school", "unlisted"];
@@ -64,7 +65,7 @@ export function PostFilters({
           <option value="">全部可见性</option>
           {visibilityOptions.map((item) => (
             <option key={item} value={item}>
-              {item}
+              {visibilityLabels[item]}
             </option>
           ))}
         </select>
@@ -75,7 +76,7 @@ export function PostFilters({
           <option value="">全部状态</option>
           {statusOptions.map((item) => (
             <option key={item} value={item}>
-              {item}
+              {statusLabels[item]}
             </option>
           ))}
         </select>
@@ -86,7 +87,7 @@ export function PostFilters({
           <option value="">全部类型</option>
           {typeOptions.map((item) => (
             <option key={item} value={item}>
-              {item}
+              {postTypeLabels[item]}
             </option>
           ))}
         </select>

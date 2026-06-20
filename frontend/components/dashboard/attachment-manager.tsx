@@ -126,7 +126,11 @@ export function AttachmentManager({ token, items, posts }: { token: string; item
           {list.length === 0 ? (
             <Empty className="m-4">
               <EmptyTitle>暂无附件</EmptyTitle>
-              <EmptyDescription>上传附件后会显示在这里。</EmptyDescription>
+              <EmptyDescription>{posts.length === 0 ? "创建内容后可上传关联附件。" : "上传附件后会显示在这里。"}</EmptyDescription>
+              <Button type="button" variant="outline" size="sm" onClick={() => fileInputRef.current?.click()} disabled={posts.length === 0}>
+                <UploadIcon data-icon="inline-start" />
+                上传附件
+              </Button>
             </Empty>
           ) : (
             list.map((item) => (

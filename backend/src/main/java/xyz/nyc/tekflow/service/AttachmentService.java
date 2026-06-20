@@ -40,13 +40,15 @@ public class AttachmentService {
     private final PostService postService;
     private final TekflowProperties properties;
     private final ResponseMapper responseMapper;
+    private final PostShareService postShareService;
 
     public AttachmentService(AttachmentMapper attachmentMapper, PostService postService,
-                             TekflowProperties properties, ResponseMapper responseMapper) {
+                             TekflowProperties properties, ResponseMapper responseMapper, PostShareService postShareService) {
         this.attachmentMapper = attachmentMapper;
         this.postService = postService;
         this.properties = properties;
         this.responseMapper = responseMapper;
+        this.postShareService = postShareService;
     }
 
     public List<AttachmentResponse> list() {
@@ -97,6 +99,41 @@ public class AttachmentService {
         if (!canAccess(post)) {
             throw notFound();
         }
+        return fileResponse(attachment);
+    }
+
+    @PerfMonitor
+    @AuditAction("attachment.share_download")
+    public ResponseEntity<Resource> downloadShared(Long id, String shareToken, String accessCode) {
+        Attachment attachment = attachmentMapper.findActiveById(id);
+        if (attachment == null) {
+            throw notFound();
+        }
+        Long shareId = postShareService.verifyAttachmentAccess(shareToken, attachment, accessCode);
+        ResponseEntity<Resource> response = fileResponse(attachment);
+        postShareService.recordAttachmentDownload(shareId);
+        return response;
+    }
+
+    @AuditAction("attachment.delete")
+    public void delete(Long id) {
+        attachmentMapper.softDelete(id);
+    }
+
+    private boolean canAccess(Post post) {
+        if (post == null) {
+            return false;
+        }
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.getPrincipal() instanceof UserPrincipal) {
+            return true;
+        }
+        return post.getDeletedAt() == null
+                && "published".equals(post.getStatus())
+                && ("public".equals(post.getVisibility()) || "school".equals(post.getVisibility()));
+    }
+
+    private ResponseEntity<Resource> fileResponse(Attachment attachment) {
         try {
             Path path = Path.of(attachment.getPath()).normalize();
             Resource resource = new UrlResource(path.toUri());
@@ -113,22 +150,6 @@ public class AttachmentService {
         }
     }
 
-    @AuditAction("attachment.delete")
-    public void delete(Long id) {
-        attachmentMapper.softDelete(id);
-    }
-
-    private boolean canAccess(Post post) {
-        if (post == null) {
-            return false;
-        }
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.getPrincipal() instanceof UserPrincipal) {
-            return true;
-        }
-        return PostRules.isVisitorVisible(post);
-    }
-
     private String extension(String filename) {
         int idx = filename.lastIndexOf('.');
         if (idx < 0 || idx == filename.length() - 1) {
@@ -141,4 +162,3 @@ public class AttachmentService {
         return new BusinessException(HttpStatus.NOT_FOUND, 404, "资源不存在");
     }
 }
-

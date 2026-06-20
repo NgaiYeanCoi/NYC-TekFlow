@@ -8,7 +8,7 @@ export default async function SettingsPage() {
   return (
     <div className="flex flex-col gap-6">
       <div className="border-b border-border pb-5">
-        <h1 className="text-2xl font-semibold">Settings</h1>
+        <h1 className="text-2xl font-semibold">设置</h1>
         <p className="mt-2 text-sm leading-6 text-muted-foreground">当前账号和工作台使用概览。</p>
       </div>
       <div className="grid gap-6 lg:grid-cols-2">
@@ -19,7 +19,7 @@ export default async function SettingsPage() {
         </CardHeader>
         <CardContent className="flex flex-col gap-2 text-sm">
           <div>名称：{session?.user.name}</div>
-          <div>Username：{session?.user.username}</div>
+          <div>用户名：{session?.user.username}</div>
           <div>角色：{session?.user.role}</div>
         </CardContent>
       </Card>

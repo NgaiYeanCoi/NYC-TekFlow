@@ -1,19 +1,33 @@
 import Link from "next/link";
-import { EditIcon, PlusIcon } from "lucide-react";
+import type { ReactNode } from "react";
+import { EditIcon, ExternalLinkIcon, LinkIcon, PlusIcon } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Empty, EmptyDescription, EmptyTitle } from "@/components/ui/empty";
 import { StatusBadge, VisibilityBadge } from "@/components/common/status-badge";
 import { formatDateTime } from "@/lib/format";
+import { postTypeLabels, publicPostHref } from "@/lib/post-display";
 import type { Post } from "@/types/tekflow";
 
-export function PostTable({ posts, title = "内容列表" }: { posts: Post[]; title?: string }) {
+export function PostTable({
+  posts,
+  title = "内容列表",
+  emptyTitle = "暂无内容",
+  emptyDescription = "创建第一篇内容后会出现在这里。",
+  emptyAction,
+}: {
+  posts: Post[];
+  title?: string;
+  emptyTitle?: string;
+  emptyDescription?: string;
+  emptyAction?: ReactNode;
+}) {
   return (
     <Card className="overflow-hidden">
       <CardHeader className="flex-row items-center justify-between gap-3 border-b border-border">
         <div>
           <CardTitle>{title}</CardTitle>
-          <p className="mt-1 text-sm text-muted-foreground">{posts.length} items in current view</p>
+          <p className="mt-1 text-sm text-muted-foreground">当前视图 {posts.length} 项</p>
         </div>
         <Link href="/dashboard/posts/new" className={buttonVariants({ size: "sm" })}>
           <PlusIcon data-icon="inline-start" />
@@ -23,8 +37,14 @@ export function PostTable({ posts, title = "内容列表" }: { posts: Post[]; ti
       <CardContent className="p-0">
         {posts.length === 0 ? (
           <Empty className="m-4">
-            <EmptyTitle>暂无内容</EmptyTitle>
-            <EmptyDescription>创建第一篇 Post 后会出现在这里。</EmptyDescription>
+            <EmptyTitle>{emptyTitle}</EmptyTitle>
+            <EmptyDescription>{emptyDescription}</EmptyDescription>
+            {emptyAction ?? (
+              <Link href="/dashboard/posts/new" className={buttonVariants({ size: "sm" })}>
+                <PlusIcon data-icon="inline-start" />
+                新建内容
+              </Link>
+            )}
           </Empty>
         ) : (
           <div className="overflow-x-auto">
@@ -49,7 +69,7 @@ export function PostTable({ posts, title = "内容列表" }: { posts: Post[]; ti
                         <span className="truncate font-mono text-xs text-muted-foreground">/{post.slug}</span>
                       </div>
                     </td>
-                    <td className="px-3 py-3 font-mono text-xs text-muted-foreground">{post.type}</td>
+                    <td className="px-3 py-3 text-muted-foreground">{postTypeLabels[post.type]}</td>
                     <td className="px-3 py-3">
                       <VisibilityBadge value={post.visibility} />
                     </td>
@@ -59,10 +79,7 @@ export function PostTable({ posts, title = "内容列表" }: { posts: Post[]; ti
                     <td className="px-3 py-3 text-muted-foreground">{post.category?.name ?? "-"}</td>
                     <td className="px-3 py-3 text-muted-foreground">{formatDateTime(post.updatedAt)}</td>
                     <td className="px-3 py-3">
-                      <Link href={`/dashboard/posts/${post.id}`} className="inline-flex min-h-9 items-center gap-1 rounded-md px-2 font-semibold text-primary hover:bg-accent">
-                        <EditIcon data-icon="inline-start" />
-                        编辑
-                      </Link>
+                      <PostActions post={post} />
                     </td>
                   </tr>
                 ))}
@@ -72,5 +89,29 @@ export function PostTable({ posts, title = "内容列表" }: { posts: Post[]; ti
         )}
       </CardContent>
     </Card>
+  );
+}
+
+function PostActions({ post }: { post: Post }) {
+  const href = publicPostHref(post);
+  return (
+    <div className="flex flex-wrap gap-1">
+      <Link href={`/dashboard/posts/${post.id}`} className="inline-flex min-h-9 items-center gap-1 rounded-md px-2 font-semibold text-primary hover:bg-accent">
+        <EditIcon data-icon="inline-start" />
+        编辑
+      </Link>
+      {href ? (
+        <Link href={href} className="inline-flex min-h-9 items-center gap-1 rounded-md px-2 font-semibold text-muted-foreground hover:bg-accent hover:text-foreground">
+          <ExternalLinkIcon data-icon="inline-start" />
+          查看
+        </Link>
+      ) : null}
+      {post.visibility === "unlisted" && post.status === "published" ? (
+        <Link href={`/dashboard/posts/${post.id}#share`} className="inline-flex min-h-9 items-center gap-1 rounded-md px-2 font-semibold text-muted-foreground hover:bg-accent hover:text-foreground">
+          <LinkIcon data-icon="inline-start" />
+          分享
+        </Link>
+      ) : null}
+    </div>
   );
 }

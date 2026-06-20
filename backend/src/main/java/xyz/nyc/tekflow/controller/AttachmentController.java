@@ -14,10 +14,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import xyz.nyc.tekflow.common.ApiResponse;
 import xyz.nyc.tekflow.dto.AttachmentDtos.AttachmentResponse;
+import xyz.nyc.tekflow.dto.PostShareDtos.ShareOpenRequest;
 import xyz.nyc.tekflow.service.AttachmentService;
 
 @RestController
@@ -63,5 +65,16 @@ public class AttachmentController {
     @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "允许访问，返回文件流")
     public ResponseEntity<Resource> download(@Parameter(description = "附件 ID") @PathVariable Long id) {
         return attachmentService.download(id);
+    }
+
+    @PostMapping("/share/posts/{token}/attachments/{id}")
+    @Operation(summary = "受控下载分享附件", description = "分享页附件下载入口。后端校验分享 token、访问码、过期时间和撤销状态。")
+    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "允许访问，返回文件流")
+    public ResponseEntity<Resource> downloadShared(
+            @Parameter(description = "分享 token") @PathVariable String token,
+            @Parameter(description = "附件 ID") @PathVariable Long id,
+            @RequestBody(required = false) ShareOpenRequest request
+    ) {
+        return attachmentService.downloadShared(id, token, request == null ? null : request.accessCode());
     }
 }

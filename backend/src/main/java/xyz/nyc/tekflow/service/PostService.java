@@ -130,14 +130,6 @@ public class PostService {
         return toResponse(post);
     }
 
-    public PostResponse sharePost(String slug) {
-        Post post = postMapper.findShareBySlug(slug);
-        if (post == null) {
-            throw notFound();
-        }
-        return toResponse(post);
-    }
-
     @PerfMonitor
     public PageResponse<PostResponse> schoolNotices(String courseName, String noticeStatus, String noticePriority,
                                                     LocalDate fromDate, LocalDate toDate, int page, int pageSize) {
@@ -230,7 +222,7 @@ public class PostService {
         }
     }
 
-    private PostResponse toResponse(Post post) {
+    public PostResponse toResponse(Post post) {
         if ("school_notice".equals(post.getType())) {
             post.setNoticeStatus(PostRules.calculateNoticeStatus(post));
         }

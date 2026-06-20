@@ -19,14 +19,14 @@ export default async function SchoolAdminPage() {
     <div className="flex flex-col gap-6">
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-5">
         <div>
-          <h1 className="text-2xl font-semibold">School Notice 管理</h1>
+          <h1 className="text-2xl font-semibold">学校事项管理</h1>
           <p className="mt-2 text-sm leading-6 text-muted-foreground">维护课程、截止时间、地点和优先级。</p>
         </div>
         <Link href="/dashboard/posts/new?type=school_notice" className={buttonVariants()}>
-          新建 School Notice
+          新建学校事项
         </Link>
       </div>
-      <PostTable posts={posts.items} title="School Notices" />
+      <PostTable posts={posts.items} title="学校事项" emptyDescription="创建第一条学校事项后会出现在这里。" />
     </div>
   );
 }

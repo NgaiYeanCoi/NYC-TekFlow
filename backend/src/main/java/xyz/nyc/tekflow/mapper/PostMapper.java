@@ -112,9 +112,6 @@ public interface PostMapper extends BaseMapper<Post> {
     @Select("SELECT * FROM posts WHERE slug = #{slug} AND deleted_at IS NULL AND status = 'published' AND visibility = 'public' LIMIT 1")
     Post findPublicBySlug(String slug);
 
-    @Select("SELECT * FROM posts WHERE slug = #{slug} AND deleted_at IS NULL AND status = 'published' AND visibility = 'unlisted' LIMIT 1")
-    Post findShareBySlug(String slug);
-
     @Select("""
             <script>
             SELECT * FROM posts

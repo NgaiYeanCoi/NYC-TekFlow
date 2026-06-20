@@ -20,7 +20,7 @@ export default async function DashboardPage() {
     <div className="flex flex-col gap-6">
       <div className="flex flex-col justify-between gap-4 border-b border-border pb-5 md:flex-row md:items-end">
         <div>
-          <h1 className="text-2xl font-semibold">Dashboard</h1>
+          <h1 className="text-2xl font-semibold">概览</h1>
           <p className="mt-2 text-sm leading-6 text-muted-foreground">管理内容、可见性、学校事项和附件。</p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -30,14 +30,14 @@ export default async function DashboardPage() {
           </Link>
           <Link className={buttonVariants({ size: "sm", variant: "outline" })} href="/dashboard/posts/new?type=school_notice">
             <GraduationCapIcon data-icon="inline-start" />
-            School Notice
+            学校事项
           </Link>
         </div>
       </div>
       <div className="grid gap-4 md:grid-cols-3">
-        <StatCard title="全部内容" value={summary?.totalPosts ?? posts.total} description="后台可见的 Post" icon={FileTextIcon} />
+        <StatCard title="全部内容" value={summary?.totalPosts ?? posts.total} description="后台可见内容" icon={FileTextIcon} />
         <StatCard title="公开内容" value={summary?.publicPosts ?? 0} description="已整理的公开内容" icon={ShieldCheckIcon} />
-        <StatCard title="学校事项" value={summary?.schoolNoticePosts ?? 0} description="School Notice 总数" icon={GraduationCapIcon} />
+        <StatCard title="学校事项" value={summary?.schoolNoticePosts ?? 0} description="学校事项总数" icon={GraduationCapIcon} />
       </div>
       <div className="grid gap-6 xl:grid-cols-[1fr_320px]">
         <PostTable posts={posts.items} title="最近更新" />
@@ -48,7 +48,7 @@ export default async function DashboardPage() {
           </CardHeader>
           <CardContent className="grid gap-2 text-sm">
             <QuickLink href="/dashboard/posts" icon={FileTextIcon} label="管理全部内容" />
-            <QuickLink href="/dashboard/school" icon={GraduationCapIcon} label="查看 School Notice" />
+            <QuickLink href="/dashboard/school" icon={GraduationCapIcon} label="查看学校事项" />
             <QuickLink href="/dashboard/attachments" icon={PaperclipIcon} label="上传附件" />
           </CardContent>
         </Card>

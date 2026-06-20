@@ -2,19 +2,26 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
-import { SaveIcon } from "lucide-react";
+import { AlertCircleIcon, CheckCircle2Icon, SaveIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Field, FieldDescription, FieldGroup, FieldLabel } from "@/components/ui/field";
+import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { MarkdownRichEditor } from "@/components/dashboard/markdown-rich-editor";
 import { apiFetch } from "@/lib/api/client";
+import { noticePriorityLabels, postTypeLabels, statusLabels, visibilityLabels } from "@/lib/post-display";
+import { cn } from "@/lib/utils";
 import type { Post, PostPayload, PostStatus, PostType, Taxonomy, Visibility } from "@/types/tekflow";
 
 const types: PostType[] = ["tech_note", "ops_manual", "study_note", "project_record", "sop", "review", "tutorial", "school_notice"];
 const visibilities: Visibility[] = ["private", "public", "school", "unlisted"];
 const statuses: PostStatus[] = ["draft", "published", "archived"];
+
+type Feedback = {
+  type: "success" | "error";
+  text: string;
+};
 
 export function PostForm({
   token,
@@ -28,7 +35,7 @@ export function PostForm({
   defaultType?: PostType;
 }) {
   const router = useRouter();
-  const [message, setMessage] = React.useState("");
+  const [feedback, setFeedback] = React.useState<Feedback | null>(null);
   const [pending, setPending] = React.useState(false);
   const [payload, setPayload] = React.useState<PostPayload>(() => ({
     title: post?.title ?? "",
@@ -72,7 +79,7 @@ export function PostForm({
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setPending(true);
-    setMessage("");
+    setFeedback(null);
     try {
       const body = JSON.stringify({
         ...payload,
@@ -86,10 +93,15 @@ export function PostForm({
       const saved = post
         ? await apiFetch<Post>(`/api/v1/admin/posts/${post.id}`, { method: "PUT", body, token })
         : await apiFetch<Post>("/api/v1/admin/posts", { method: "POST", body, token });
-      router.push(`/dashboard/posts/${saved.id}`);
-      router.refresh();
+      if (post && saved.id === post.id) {
+        setFeedback({ type: "success", text: "保存成功，内容已更新。" });
+        router.refresh();
+      } else {
+        router.push(`/dashboard/posts/${saved.id}`);
+        router.refresh();
+      }
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "保存失败");
+      setFeedback({ type: "error", text: error instanceof Error ? error.message : "保存失败，请检查内容后重试。" });
     } finally {
       setPending(false);
     }
@@ -117,7 +129,6 @@ export function PostForm({
               <Textarea id="summary" value={payload.summary} onChange={(event) => update("summary", event.target.value)} />
             </Field>
             <MarkdownRichEditor id="content" label="正文" value={payload.content ?? ""} onChange={(value) => update("content", value)} />
-            {message ? <FieldDescription className="text-destructive" role="alert">{message}</FieldDescription> : null}
           </FieldGroup>
         </CardContent>
       </Card>
@@ -134,7 +145,7 @@ export function PostForm({
                 <select id="type" className="h-10 rounded-md border border-input bg-card px-3 text-sm" value={payload.type} onChange={(event) => update("type", event.target.value as PostType)}>
                   {types.map((item) => (
                     <option key={item} value={item}>
-                      {item}
+                      {postTypeLabels[item]}
                     </option>
                   ))}
                 </select>
@@ -144,7 +155,7 @@ export function PostForm({
                 <select id="visibility" className="h-10 rounded-md border border-input bg-card px-3 text-sm" value={payload.visibility} onChange={(event) => update("visibility", event.target.value as Visibility)}>
                   {visibilities.map((item) => (
                     <option key={item} value={item}>
-                      {item}
+                      {visibilityLabels[item]}
                     </option>
                   ))}
                 </select>
@@ -154,7 +165,7 @@ export function PostForm({
                 <select id="status" className="h-10 rounded-md border border-input bg-card px-3 text-sm" value={payload.status} onChange={(event) => update("status", event.target.value as PostStatus)}>
                   {statuses.map((item) => (
                     <option key={item} value={item}>
-                      {item}
+                      {statusLabels[item]}
                     </option>
                   ))}
                 </select>
@@ -214,7 +225,7 @@ export function PostForm({
         {payload.type === "school_notice" ? (
           <Card className="overflow-hidden">
             <CardHeader className="border-b border-border">
-              <CardTitle>School Notice</CardTitle>
+              <CardTitle>学校事项</CardTitle>
             </CardHeader>
             <CardContent className="pt-5 md:pt-5">
               <FieldGroup>
@@ -249,9 +260,9 @@ export function PostForm({
                 <Field>
                   <FieldLabel htmlFor="priority">优先级</FieldLabel>
                   <select id="priority" className="h-10 rounded-md border border-input bg-card px-3 text-sm" value={payload.noticePriority ?? "normal"} onChange={(event) => update("noticePriority", event.target.value as "normal" | "important" | "urgent")}>
-                    <option value="normal">normal</option>
-                    <option value="important">important</option>
-                    <option value="urgent">urgent</option>
+                    <option value="normal">{noticePriorityLabels.normal}</option>
+                    <option value="important">{noticePriorityLabels.important}</option>
+                    <option value="urgent">{noticePriorityLabels.urgent}</option>
                   </select>
                 </Field>
                 <Field>
@@ -265,11 +276,33 @@ export function PostForm({
           </Card>
         ) : null}
 
+        {feedback ? <FormFeedback feedback={feedback} /> : null}
+
         <Button type="submit" disabled={pending}>
           <SaveIcon data-icon="inline-start" />
           {pending ? "保存中" : "保存"}
         </Button>
       </div>
     </form>
+  );
+}
+
+function FormFeedback({ feedback }: { feedback: Feedback }) {
+  const Icon = feedback.type === "success" ? CheckCircle2Icon : AlertCircleIcon;
+
+  return (
+    <div
+      role={feedback.type === "error" ? "alert" : "status"}
+      aria-live={feedback.type === "error" ? "assertive" : "polite"}
+      className={cn(
+        "flex items-start gap-2 rounded-md border px-3 py-2 text-sm font-medium",
+        feedback.type === "success"
+          ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+          : "border-destructive/30 bg-destructive/10 text-destructive",
+      )}
+    >
+      <Icon data-icon="inline-start" className="mt-0.5 shrink-0" />
+      <span>{feedback.text}</span>
+    </div>
   );
 }

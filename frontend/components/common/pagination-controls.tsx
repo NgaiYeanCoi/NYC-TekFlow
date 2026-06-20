@@ -26,11 +26,11 @@ function hrefFor(pathname: string, params: Record<string, string | number | null
 }
 
 export function PaginationControls({ pathname, params, page, pageSize, total }: PaginationControlsProps) {
-  if (total === 0) {
+  const totalPages = Math.max(Math.ceil(total / pageSize), 1);
+  if (totalPages <= 1) {
     return null;
   }
 
-  const totalPages = Math.max(Math.ceil(total / pageSize), 1);
   const hasPrevious = page > 1;
   const hasNext = page < totalPages;
 

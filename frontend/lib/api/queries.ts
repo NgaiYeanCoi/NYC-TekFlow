@@ -1,5 +1,5 @@
 import { apiFetch } from "@/lib/api/client";
-import type { PageResponse, Post, PostSummary, Taxonomy, TaxonomyBundle } from "@/types/tekflow";
+import type { PageResponse, Post, PostShare, PostSummary, ShareMeta, Taxonomy, TaxonomyBundle } from "@/types/tekflow";
 
 export function queryString(params: Record<string, string | number | null | undefined>) {
   const search = new URLSearchParams();
@@ -20,8 +20,15 @@ export async function getWikiPost(slug: string) {
   return apiFetch<Post>(`/api/v1/wiki/posts/${slug}`);
 }
 
-export async function getSharePost(slug: string) {
-  return apiFetch<Post>(`/api/v1/share/posts/${slug}`);
+export async function getShareMeta(token: string) {
+  return apiFetch<ShareMeta>(`/api/v1/share/posts/${token}/meta`);
+}
+
+export async function openSharePost(token: string, accessCode?: string) {
+  return apiFetch<Post>(`/api/v1/share/posts/${token}/open`, {
+    method: "POST",
+    body: JSON.stringify({ accessCode: accessCode || "" }),
+  });
 }
 
 export async function getSchoolNotices(params: Record<string, string | number | null | undefined>) {
@@ -42,6 +49,10 @@ export async function getAdminPosts(token: string, params: Record<string, string
 
 export async function getAdminPost(token: string, id: number) {
   return apiFetch<Post>(`/api/v1/admin/posts/${id}`, { token });
+}
+
+export async function getAdminShare(token: string, postId: number) {
+  return apiFetch<PostShare>(`/api/v1/admin/posts/${postId}/share`, { token });
 }
 
 export async function getAdminSummary(token: string) {
