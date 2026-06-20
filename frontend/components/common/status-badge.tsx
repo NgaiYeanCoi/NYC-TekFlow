@@ -30,7 +30,8 @@ export function PriorityBadge({ value }: { value?: string | null }) {
     return null;
   }
   const variant: BadgeProps["variant"] = value === "urgent" ? "destructive" : value === "important" ? "warning" : "success";
-  return <Badge variant={variant}>{value}</Badge>;
+  const label = value === "urgent" ? "紧急" : value === "important" ? "重要" : "普通";
+  return <Badge variant={variant}>{label}</Badge>;
 }
 
 export function NoticeStatusBadge({ value }: { value?: string | null }) {
@@ -39,6 +40,6 @@ export function NoticeStatusBadge({ value }: { value?: string | null }) {
   }
   const variant: BadgeProps["variant"] =
     value === "expired" ? "destructive" : value === "done" ? "muted" : value === "ongoing" ? "success" : "default";
-  return <Badge variant={variant}>{value}</Badge>;
+  const label = value === "expired" ? "已过期" : value === "done" ? "已完成" : value === "ongoing" ? "进行中" : "即将";
+  return <Badge variant={variant}>{label}</Badge>;
 }
-

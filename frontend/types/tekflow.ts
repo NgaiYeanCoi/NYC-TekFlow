@@ -62,6 +62,28 @@ export type PageResponse<T> = {
   pageSize: number;
 };
 
+export type TaxonomyBundle = {
+  categories: Taxonomy[];
+  tags: Taxonomy[];
+  projects: Taxonomy[];
+};
+
+export type PostSummary = {
+  totalPosts: number;
+  publishedPosts: number;
+  draftPosts: number;
+  archivedPosts: number;
+  privatePosts: number;
+  publicPosts: number;
+  schoolPosts: number;
+  unlistedPosts: number;
+  schoolNoticePosts: number;
+  attachments: number;
+  categories: number;
+  tags: number;
+  projects: number;
+};
+
 export type ApiEnvelope<T> = {
   code: number;
   msg: string;
@@ -103,4 +125,3 @@ export type PostPayload = {
   noticePriority?: "normal" | "important" | "urgent" | null;
   isNoticeDone?: boolean;
 };
-

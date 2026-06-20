@@ -20,6 +20,9 @@ public interface AttachmentMapper extends BaseMapper<Attachment> {
     @Select("SELECT * FROM attachments WHERE id = #{id} AND deleted_at IS NULL")
     Attachment findActiveById(Long id);
 
+    @Select("SELECT COUNT(*) FROM attachments WHERE deleted_at IS NULL")
+    long countActive();
+
     @Insert("""
             INSERT INTO attachments (post_id, filename, original_name, mime_type, size, path)
             VALUES (#{postId}, #{filename}, #{originalName}, #{mimeType}, #{size}, #{path})
@@ -30,4 +33,3 @@ public interface AttachmentMapper extends BaseMapper<Attachment> {
     @Update("UPDATE attachments SET deleted_at = CURRENT_TIMESTAMP WHERE id = #{id}")
     int softDelete(Long id);
 }
-

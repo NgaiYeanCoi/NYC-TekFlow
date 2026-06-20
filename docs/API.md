@@ -60,12 +60,14 @@
 | 登录 | POST | `/api/v1/auth/login` | 管理员 | 使用 username/password 登录并获取 JWT、用户信息和过期时间 |
 | 当前用户 | GET | `/api/v1/auth/me` | 管理员 | 获取当前用户信息 |
 | 后台内容列表 | GET | `/api/v1/admin/posts` | 管理员 | 查询全部未软删除 Post，支持分页和筛选 |
+| 后台内容统计 | GET | `/api/v1/admin/posts/summary` | 管理员 | 查询 Dashboard 和 Settings 使用的内容、附件和基础字典统计 |
 | 新建内容 | POST | `/api/v1/admin/posts` | 管理员 | 创建 Post |
 | 内容详情 | GET | `/api/v1/admin/posts/{id}` | 管理员 | 获取后台 Post 详情 |
 | 编辑内容 | PUT | `/api/v1/admin/posts/{id}` | 管理员 | 更新 Post |
 | 删除内容 | DELETE | `/api/v1/admin/posts/{id}` | 管理员 | 归档或软删除 Post |
 | 公开列表 | GET | `/api/v1/wiki/posts` | 游客 | 查询 public published 内容 |
 | 公开详情 | GET | `/api/v1/wiki/posts/{slug}` | 游客 | 查询 public published 详情 |
+| 公开筛选字典 | GET | `/api/v1/taxonomies` | 游客 | 查询公开页面筛选使用的分类、标签和项目标签 |
 | 链接访问详情 | GET | `/api/v1/share/posts/{slug}` | 链接访问者 | 查询 unlisted published 详情 |
 | School 列表 | GET | `/api/v1/school/notices` | 学校内容访问者 | 查询 school published notice，支持分区和筛选 |
 | School 详情 | GET | `/api/v1/school/notices/{slug}` | 学校内容访问者 | 查询 school published notice 详情 |
@@ -74,6 +76,16 @@
 | 项目标签管理 | CRUD | `/api/v1/admin/projects` | 管理员 | 管理项目标签 |
 | 附件上传 | POST | `/api/v1/admin/attachments` | 管理员 | 上传并关联附件 |
 | 附件访问 | GET | `/api/v1/attachments/{id}` | 按权限 | 下载或预览附件 |
+
+常用查询参数：
+
+| 接口 | 参数 |
+|---|---|
+| `/api/v1/wiki/posts` | `keyword`、`categoryId`、`tagId`、`projectId`、`page`、`pageSize` |
+| `/api/v1/school/notices` | `courseName`、`noticeStatus`、`noticePriority`、`fromDate`、`toDate`、`page`、`pageSize` |
+| `/api/v1/admin/posts` | `keyword`、`type`、`visibility`、`status`、`categoryId`、`tagId`、`projectId`、`page`、`pageSize` |
+
+School Notice 的 `noticeStatus` 筛选按请求时间实时计算：已完成优先为 `done`；截止时间已过为 `expired`；事项日期为今天为 `ongoing`；其余为 `upcoming`。
 
 ## 5. 字段与校验
 

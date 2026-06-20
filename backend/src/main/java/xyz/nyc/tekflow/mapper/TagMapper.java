@@ -24,6 +24,9 @@ public interface TagMapper extends BaseMapper<Tag> {
     @Select("SELECT COUNT(*) FROM tags WHERE slug = #{slug} AND deleted_at IS NULL AND (#{excludeId} IS NULL OR id <> #{excludeId})")
     long countBySlug(@Param("slug") String slug, @Param("excludeId") Long excludeId);
 
+    @Select("SELECT COUNT(*) FROM tags WHERE deleted_at IS NULL")
+    long countActive();
+
     @Insert("INSERT INTO tags (name, slug) VALUES (#{name}, #{slug})")
     @Options(useGeneratedKeys = true, keyProperty = "id")
     int insertTag(Tag tag);

@@ -146,6 +146,7 @@ http://localhost:3000
 - 创建一篇 `unlisted + published` 内容，确认 `/share/[slug]` 可访问，但不会出现在 `/wiki`、`/school` 或首页公开列表中。
 - 创建一篇 `private` 内容，确认游客公开页面无法访问。
 - 在 `/dashboard/attachments` 给 Post 上传附件，确认附件统一通过 `/api/v1/attachments/{id}` 受控访问。
+- 重新导入 `docs/seed-demo.sql` 后，示例附件路径指向 `docs/demo-attachments/`。按 `cd backend` 方式启动后端时，public、school 和 unlisted 示例附件应可通过受控接口下载，private 示例附件游客访问应返回拒绝或不存在。
 
 ## 验证
 
@@ -157,6 +158,8 @@ mvn test
 mvn package
 ```
 
+如果 Windows 上 `mvn package` 提示无法重命名 `target/*.jar`，通常是旧的后端进程或文件索引器占用了产物。先停止正在运行的 TekFlow 后端，再重试打包。
+
 前端：
 
 ```powershell
@@ -165,6 +168,8 @@ bun run typecheck
 bun run lint
 bun run build
 ```
+
+如果 Windows 上 `bun run build` 提示无法删除 `.next` 下的文件，通常是旧的 Next.js dev/build 进程占用了缓存。先停止前端进程；必要时只清理被 `.gitignore` 忽略的 `frontend/.next/` 后再重试。
 
 敏感信息检查：
 

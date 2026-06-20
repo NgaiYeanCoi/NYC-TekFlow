@@ -81,3 +81,13 @@
 - 已废弃根目录 `.env.local` 作为联调主配置的做法。
 - 后端本地配置改为 Spring Boot 惯例的 `backend/src/main/resources/application-dev.yml`，本地启动使用 `mvn spring-boot:run -Dspring-boot.run.profiles=dev`。
 - 前端本地配置改为 `frontend/.env.local`，由 Next.js 自动读取，启动方式保持 `bun dev`。
+
+2026-06-20 PRD 闭环复核与 P1 筛选迭代：
+
+- 按用户要求保留 `backend/src/main/resources/application-dev.yml` 当前内容不变，本轮不做 dev 配置模板化或迁移。
+- 已新增公开筛选字典接口 `/api/v1/taxonomies`，用于 Wiki 分类、标签和项目标签筛选。
+- 已新增后台统计接口 `/api/v1/admin/posts/summary`，Dashboard 和 Settings 不再用当前页数据估算全局统计。
+- 已扩展 `/api/v1/school/notices`，支持课程、状态、优先级、日期范围、分页筛选；School Notice 状态筛选按请求时间实时计算。
+- 已补齐 `/wiki`、`/school` 和 `/dashboard/posts` 的 URL search params 筛选与分页。
+- 已新增 `docs/demo-attachments/` 小型演示附件，并更新 `docs/seed-demo.sql` 的附件路径，使 seed 后的 public、school、unlisted 附件可通过受控接口下载，private 附件仍随 Post 权限拒绝游客访问。
+- 已清理首页预览中偏内部实现栈的访客可见文案。

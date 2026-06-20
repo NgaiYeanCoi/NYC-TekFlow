@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import xyz.nyc.tekflow.aspect.AuditAction;
 import xyz.nyc.tekflow.common.BusinessException;
+import xyz.nyc.tekflow.dto.TaxonomyDtos.TaxonomyBundleResponse;
 import xyz.nyc.tekflow.dto.TaxonomyDtos.TaxonomyRequest;
 import xyz.nyc.tekflow.dto.TaxonomyDtos.TaxonomyResponse;
 import xyz.nyc.tekflow.entity.Category;
@@ -99,6 +100,10 @@ public class TaxonomyService {
         return projectMapper.findAllActive().stream().map(responseMapper::project).toList();
     }
 
+    public TaxonomyBundleResponse bundle() {
+        return new TaxonomyBundleResponse(categories(), tags(), projects());
+    }
+
     @AuditAction("project.create")
     public TaxonomyResponse createProject(TaxonomyRequest request) {
         String slug = normalizeSlug(request);
@@ -182,4 +187,3 @@ public class TaxonomyService {
         return new BusinessException(HttpStatus.CONFLICT, 409, "slug 已存在");
     }
 }
-

@@ -18,6 +18,7 @@ import xyz.nyc.tekflow.common.ApiResponse;
 import xyz.nyc.tekflow.common.PageResponse;
 import xyz.nyc.tekflow.dto.PostDtos.PostRequest;
 import xyz.nyc.tekflow.dto.PostDtos.PostResponse;
+import xyz.nyc.tekflow.dto.PostDtos.PostSummaryResponse;
 import xyz.nyc.tekflow.service.PostService;
 
 @RestController
@@ -46,6 +47,13 @@ public class AdminPostController {
             @Parameter(description = "每页数量") @RequestParam(defaultValue = "10") int pageSize
     ) {
         return ApiResponse.ok(postService.adminPosts(keyword, type, visibility, status, categoryId, projectId, tagId, page, pageSize));
+    }
+
+    @GetMapping("/summary")
+    @Operation(summary = "查询后台内容统计", description = "返回工作台首页和设置页使用的真实内容、附件和基础字典统计。")
+    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "查询成功，返回统计摘要")
+    public ApiResponse<PostSummaryResponse> summary() {
+        return ApiResponse.ok(postService.adminSummary());
     }
 
     @GetMapping("/{id}")

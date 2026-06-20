@@ -108,4 +108,35 @@ public final class PostDtos {
             LocalDateTime publishedAt
     ) {
     }
+
+    @Schema(description = "后台内容与工作台统计摘要")
+    public record PostSummaryResponse(
+            @Schema(description = "未删除内容总数")
+            long totalPosts,
+            @Schema(description = "已发布内容数")
+            long publishedPosts,
+            @Schema(description = "草稿内容数")
+            long draftPosts,
+            @Schema(description = "归档内容数")
+            long archivedPosts,
+            @Schema(description = "private 内容数")
+            long privatePosts,
+            @Schema(description = "public 内容数")
+            long publicPosts,
+            @Schema(description = "school 内容数")
+            long schoolPosts,
+            @Schema(description = "unlisted 内容数")
+            long unlistedPosts,
+            @Schema(description = "School Notice 内容数")
+            long schoolNoticePosts,
+            @Schema(description = "附件数")
+            long attachments,
+            @Schema(description = "分类数")
+            long categories,
+            @Schema(description = "标签数")
+            long tags,
+            @Schema(description = "项目标签数")
+            long projects
+    ) {
+    }
 }

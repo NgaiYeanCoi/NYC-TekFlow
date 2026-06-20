@@ -3,6 +3,7 @@ package xyz.nyc.tekflow.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.time.LocalDate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -58,10 +59,12 @@ public class PublicPostController {
             @Parameter(description = "课程名称") @RequestParam(required = false) String courseName,
             @Parameter(description = "事项状态：upcoming、ongoing、done、expired") @RequestParam(required = false) String noticeStatus,
             @Parameter(description = "优先级：normal、important、urgent") @RequestParam(required = false) String noticePriority,
+            @Parameter(description = "日期范围开始，匹配事项日期或截止日期") @RequestParam(required = false) LocalDate fromDate,
+            @Parameter(description = "日期范围结束，匹配事项日期或截止日期") @RequestParam(required = false) LocalDate toDate,
             @Parameter(description = "页码，从 1 开始") @RequestParam(defaultValue = "1") int page,
             @Parameter(description = "每页数量") @RequestParam(defaultValue = "20") int pageSize
     ) {
-        return ApiResponse.ok(postService.schoolNotices(courseName, noticeStatus, noticePriority, page, pageSize));
+        return ApiResponse.ok(postService.schoolNotices(courseName, noticeStatus, noticePriority, fromDate, toDate, page, pageSize));
     }
 
     @GetMapping("/school/notices/{slug}")

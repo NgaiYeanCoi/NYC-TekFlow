@@ -1,5 +1,6 @@
 package xyz.nyc.tekflow.service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.http.HttpStatus;
@@ -11,6 +12,7 @@ import xyz.nyc.tekflow.common.BusinessException;
 import xyz.nyc.tekflow.common.PageResponse;
 import xyz.nyc.tekflow.dto.PostDtos.PostRequest;
 import xyz.nyc.tekflow.dto.PostDtos.PostResponse;
+import xyz.nyc.tekflow.dto.PostDtos.PostSummaryResponse;
 import xyz.nyc.tekflow.entity.Attachment;
 import xyz.nyc.tekflow.entity.Category;
 import xyz.nyc.tekflow.entity.Post;
@@ -60,6 +62,24 @@ public class PostService {
 
     public PostResponse adminPost(Long id) {
         return toResponse(requirePost(id));
+    }
+
+    public PostSummaryResponse adminSummary() {
+        return new PostSummaryResponse(
+                postMapper.countActive(),
+                postMapper.countByStatus("published"),
+                postMapper.countByStatus("draft"),
+                postMapper.countByStatus("archived"),
+                postMapper.countByVisibility("private"),
+                postMapper.countByVisibility("public"),
+                postMapper.countByVisibility("school"),
+                postMapper.countByVisibility("unlisted"),
+                postMapper.countByType("school_notice"),
+                attachmentMapper.countActive(),
+                categoryMapper.countActive(),
+                tagMapper.countActive(),
+                projectMapper.countActive()
+        );
     }
 
     @Transactional
@@ -119,12 +139,13 @@ public class PostService {
     }
 
     @PerfMonitor
-    public PageResponse<PostResponse> schoolNotices(String courseName, String noticeStatus, String noticePriority, int page, int pageSize) {
+    public PageResponse<PostResponse> schoolNotices(String courseName, String noticeStatus, String noticePriority,
+                                                    LocalDate fromDate, LocalDate toDate, int page, int pageSize) {
         int safePage = safePage(page);
         int safePageSize = safePageSize(pageSize);
         int offset = (safePage - 1) * safePageSize;
-        List<Post> posts = postMapper.selectSchoolNotices(courseName, noticeStatus, noticePriority, safePageSize, offset);
-        long total = postMapper.countSchoolNotices(courseName, noticeStatus, noticePriority);
+        List<Post> posts = postMapper.selectSchoolNotices(courseName, noticeStatus, noticePriority, fromDate, toDate, safePageSize, offset);
+        long total = postMapper.countSchoolNotices(courseName, noticeStatus, noticePriority, fromDate, toDate);
         return new PageResponse<>(posts.stream().map(this::toResponse).toList(), total, safePage, safePageSize);
     }
 
@@ -235,4 +256,3 @@ public class PostService {
         return new BusinessException(HttpStatus.NOT_FOUND, 404, "资源不存在");
     }
 }
-

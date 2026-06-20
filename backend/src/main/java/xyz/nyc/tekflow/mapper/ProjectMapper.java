@@ -21,6 +21,9 @@ public interface ProjectMapper extends BaseMapper<Project> {
     @Select("SELECT COUNT(*) FROM projects WHERE slug = #{slug} AND deleted_at IS NULL AND (#{excludeId} IS NULL OR id <> #{excludeId})")
     long countBySlug(@Param("slug") String slug, @Param("excludeId") Long excludeId);
 
+    @Select("SELECT COUNT(*) FROM projects WHERE deleted_at IS NULL")
+    long countActive();
+
     @Insert("INSERT INTO projects (name, slug, description) VALUES (#{name}, #{slug}, #{description})")
     @Options(useGeneratedKeys = true, keyProperty = "id")
     int insertProject(Project project);

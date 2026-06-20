@@ -106,9 +106,9 @@ function Signal({ icon: Icon, label }: { icon: LucideIcon; label: string }) {
 
 function WorkspacePreview() {
   const workflowRows: Array<[string, string, LucideIcon]> = [
-    ["MySQL 备份笔记", "技术笔记", FileTextIcon],
+    ["资料备份笔记", "技术笔记", FileTextIcon],
     ["期末复习安排", "学校事项", GraduationCapIcon],
-    ["Spring Security 整理", "公开文章", BookOpenIcon],
+    ["登录流程整理", "公开文章", BookOpenIcon],
   ];
 
   return (

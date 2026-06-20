@@ -2,6 +2,7 @@ package xyz.nyc.tekflow.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
+import java.util.List;
 
 public final class TaxonomyDtos {
     private TaxonomyDtos() {
@@ -28,6 +29,17 @@ public final class TaxonomyDtos {
             String slug,
             @Schema(description = "描述")
             String description
+    ) {
+    }
+
+    @Schema(description = "公开筛选所需的分类、标签和项目标签集合")
+    public record TaxonomyBundleResponse(
+            @Schema(description = "分类列表")
+            List<TaxonomyResponse> categories,
+            @Schema(description = "标签列表")
+            List<TaxonomyResponse> tags,
+            @Schema(description = "项目标签列表")
+            List<TaxonomyResponse> projects
     ) {
     }
 }

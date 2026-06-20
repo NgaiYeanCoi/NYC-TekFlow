@@ -4,16 +4,17 @@ import { auth } from "@/auth";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { PostTable } from "@/components/dashboard/post-table";
-import { getAdminPosts } from "@/lib/api/queries";
+import { getAdminPosts, getAdminSummary } from "@/lib/api/queries";
 
 export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
   const session = await auth();
   const token = session?.accessToken ?? "";
-  const posts = await getAdminPosts(token, { page: 1, pageSize: 6 }).catch(() => ({ items: [], total: 0, page: 1, pageSize: 6 }));
-  const publicCount = posts.items.filter((post) => post.visibility === "public").length;
-  const schoolCount = posts.items.filter((post) => post.visibility === "school").length;
+  const [posts, summary] = await Promise.all([
+    getAdminPosts(token, { page: 1, pageSize: 6 }).catch(() => ({ items: [], total: 0, page: 1, pageSize: 6 })),
+    getAdminSummary(token).catch(() => null),
+  ]);
 
   return (
     <div className="flex flex-col gap-6">
@@ -34,9 +35,9 @@ export default async function DashboardPage() {
         </div>
       </div>
       <div className="grid gap-4 md:grid-cols-3">
-        <StatCard title="全部内容" value={posts.total} description="后台可见的 Post" icon={FileTextIcon} />
-        <StatCard title="公开内容" value={publicCount} description="当前页 public 项" icon={ShieldCheckIcon} />
-        <StatCard title="学校事项" value={schoolCount} description="当前页 school 项" icon={GraduationCapIcon} />
+        <StatCard title="全部内容" value={summary?.totalPosts ?? posts.total} description="后台可见的 Post" icon={FileTextIcon} />
+        <StatCard title="公开内容" value={summary?.publicPosts ?? 0} description="已整理的公开内容" icon={ShieldCheckIcon} />
+        <StatCard title="学校事项" value={summary?.schoolNoticePosts ?? 0} description="School Notice 总数" icon={GraduationCapIcon} />
       </div>
       <div className="grid gap-6 xl:grid-cols-[1fr_320px]">
         <PostTable posts={posts.items} title="最近更新" />

@@ -1,16 +1,25 @@
 import { Empty, EmptyDescription, EmptyTitle } from "@/components/ui/empty";
-import { Input } from "@/components/ui/input";
+import { PaginationControls } from "@/components/common/pagination-controls";
 import { PublicShell } from "@/components/layout/public-shell";
 import { PostCard } from "@/components/public/post-card";
+import { WikiFilters } from "@/components/public/wiki-filters";
 import { firstParam, readSearchParams } from "@/lib/route";
-import { getWikiPosts } from "@/lib/api/queries";
+import { getPublicTaxonomies, getWikiPosts } from "@/lib/api/queries";
 
 export const dynamic = "force-dynamic";
 
 export default async function WikiPage({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> }) {
   const params = await readSearchParams(searchParams);
   const keyword = firstParam(params.keyword);
-  const result = await getWikiPosts({ keyword, page: firstParam(params.page) ?? 1, pageSize: 12 }).catch(() => null);
+  const categoryId = firstParam(params.categoryId);
+  const tagId = firstParam(params.tagId);
+  const projectId = firstParam(params.projectId);
+  const page = Number(firstParam(params.page) ?? 1) || 1;
+  const pageSize = 12;
+  const [result, taxonomies] = await Promise.all([
+    getWikiPosts({ keyword, categoryId, tagId, projectId, page, pageSize }).catch(() => null),
+    getPublicTaxonomies().catch(() => ({ categories: [], tags: [], projects: [] })),
+  ]);
   const posts = result?.items ?? [];
 
   return (
@@ -21,10 +30,7 @@ export default async function WikiPage({ searchParams }: { searchParams?: Promis
             <h1 className="text-2xl font-semibold">公开知识库</h1>
             <p className="mt-2 text-sm leading-6 text-muted-foreground">阅读整理后的技术笔记、学习资料和项目复盘。</p>
           </div>
-          <form className="rounded-lg border border-border bg-card p-3">
-            <label className="mb-2 block text-sm font-semibold" htmlFor="wiki-keyword">搜索</label>
-            <Input id="wiki-keyword" name="keyword" defaultValue={keyword} placeholder="搜索公开内容" />
-          </form>
+          <WikiFilters keyword={keyword} categoryId={categoryId} tagId={tagId} projectId={projectId} taxonomies={taxonomies} />
         </aside>
         <section className="grid gap-4">
           {posts.length > 0 ? (
@@ -35,6 +41,15 @@ export default async function WikiPage({ searchParams }: { searchParams?: Promis
               <EmptyDescription>有公开文章后会显示在这里。</EmptyDescription>
             </Empty>
           )}
+          {result ? (
+            <PaginationControls
+              pathname="/wiki"
+              params={{ keyword, categoryId, tagId, projectId, pageSize }}
+              page={result.page}
+              pageSize={result.pageSize}
+              total={result.total}
+            />
+          ) : null}
         </section>
       </main>
     </PublicShell>

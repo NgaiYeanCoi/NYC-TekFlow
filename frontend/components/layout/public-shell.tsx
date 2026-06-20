@@ -2,18 +2,34 @@
 
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { BookOpenIcon, GraduationCapIcon, LayoutDashboardIcon } from "lucide-react";
+import { BookOpenIcon, GraduationCapIcon, HomeIcon, LayoutDashboardIcon, LogInIcon, LogOutIcon } from "lucide-react";
+import { signOut, useSession } from "next-auth/react";
 import { usePathname } from "next/navigation";
+import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 const navItems = [
+  { href: "/", label: "首页", icon: HomeIcon },
   { href: "/wiki", label: "知识库", icon: BookOpenIcon },
   { href: "/school", label: "学校事项", icon: GraduationCapIcon },
-  { href: "/login", label: "管理后台", icon: LayoutDashboardIcon },
+  { href: "/dashboard", label: "管理后台", icon: LayoutDashboardIcon },
 ];
+
+function isActivePath(pathname: string, href: string) {
+  if (href === "/") {
+    return pathname === href;
+  }
+  if (href === "/dashboard") {
+    return pathname === "/login" || pathname.startsWith("/dashboard");
+  }
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
 
 export function PublicShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
+  const { data: session, status } = useSession();
+  const username = session?.user?.username || session?.user?.name || "管理员";
+
   return (
     <div className="min-h-dvh bg-background">
       <header className="sticky top-0 z-30 border-b border-border bg-card/95 backdrop-blur">
@@ -28,7 +44,7 @@ export function PublicShell({ children }: { children: ReactNode }) {
           <nav className="hidden items-center gap-1 sm:flex">
             {navItems.map((item) => {
               const Icon = item.icon;
-              const active = pathname === item.href;
+              const active = isActivePath(pathname, item.href);
               return (
                 <Link
                   key={item.href}
@@ -44,11 +60,35 @@ export function PublicShell({ children }: { children: ReactNode }) {
               );
             })}
           </nav>
+          <div className="flex shrink-0 items-center gap-2">
+            {status === "loading" ? (
+              <span className="h-9 w-16 rounded-md bg-muted" aria-hidden />
+            ) : status === "authenticated" ? (
+              <>
+                <span className="max-w-20 truncate text-sm font-semibold text-foreground sm:max-w-32" title={username}>
+                  {username}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => signOut({ callbackUrl: "/login" })}
+                  className={cn(buttonVariants({ variant: "outline", size: "sm" }), "shrink-0")}
+                >
+                  <LogOutIcon data-icon="inline-start" />
+                  登出
+                </button>
+              </>
+            ) : (
+              <Link href="/login" className={cn(buttonVariants({ variant: "outline", size: "sm" }), "shrink-0")}>
+                <LogInIcon data-icon="inline-start" />
+                登录
+              </Link>
+            )}
+          </div>
         </div>
         <nav className="mx-auto flex max-w-7xl gap-1 overflow-x-auto border-t border-border px-3 py-2 sm:hidden">
           {navItems.map((item) => {
             const Icon = item.icon;
-            const active = pathname === item.href;
+            const active = isActivePath(pathname, item.href);
             return (
               <Link
                 key={item.href}

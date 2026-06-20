@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { ReactNode } from "react";
 import { ArrowRightIcon, CalendarClockIcon, MapPinIcon } from "lucide-react";
 import { Empty, EmptyDescription, EmptyTitle } from "@/components/ui/empty";
 import { NoticeStatusBadge, PriorityBadge } from "@/components/common/status-badge";
@@ -7,21 +8,42 @@ import type { Post } from "@/types/tekflow";
 
 function groupNotices(posts: Post[]) {
   const now = new Date();
-  const today = now.toISOString().slice(0, 10);
+  const today = dateKey(now);
   const weekEnd = new Date(now);
   weekEnd.setDate(now.getDate() + 7);
-  const weekEndKey = weekEnd.toISOString().slice(0, 10);
+  const weekEndKey = dateKey(weekEnd);
+  const used = new Set<number>();
+
+  const take = (items: Post[]) =>
+    items.filter((post) => {
+      if (used.has(post.id)) {
+        return false;
+      }
+      used.add(post.id);
+      return true;
+    });
+
+  const upcoming = take(posts.filter((post) => post.deadlineAt && post.noticeStatus !== "expired" && post.noticeStatus !== "done"));
+  const todayItems = take(posts.filter((post) => post.eventDate === today && post.noticeStatus !== "expired" && post.noticeStatus !== "done"));
+  const week = take(posts.filter((post) => post.eventDate && post.eventDate > today && post.eventDate <= weekEndKey && post.noticeStatus !== "expired" && post.noticeStatus !== "done"));
+  const expired = take(posts.filter((post) => post.noticeStatus === "expired"));
 
   return {
-    upcoming: posts.filter((post) => post.deadlineAt && post.noticeStatus !== "expired" && post.noticeStatus !== "done"),
-    today: posts.filter((post) => post.eventDate === today),
-    week: posts.filter((post) => post.eventDate && post.eventDate > today && post.eventDate <= weekEndKey),
-    expired: posts.filter((post) => post.noticeStatus === "expired"),
+    upcoming,
+    today: todayItems,
+    week,
+    expired,
     all: posts,
   };
 }
 
-export function SchoolBoard({ posts }: { posts: Post[] }) {
+function dateKey(value: Date) {
+  const month = String(value.getMonth() + 1).padStart(2, "0");
+  const day = String(value.getDate()).padStart(2, "0");
+  return `${value.getFullYear()}-${month}-${day}`;
+}
+
+export function SchoolBoard({ posts, total, filters, pagination }: { posts: Post[]; total?: number; filters?: ReactNode; pagination?: ReactNode }) {
   const groups = groupNotices(posts);
   return (
     <div className="mx-auto flex max-w-7xl flex-col gap-8 px-4 py-10">
@@ -31,9 +53,10 @@ export function SchoolBoard({ posts }: { posts: Post[] }) {
           <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">按截止时间、今日事项和本周安排查看学校通知。</p>
         </div>
         <div className="rounded-md border border-border bg-card px-3 py-2 text-sm text-muted-foreground">
-          {posts.length} 项事项
+          {total ?? posts.length} 项事项
         </div>
       </div>
+      {filters}
       {posts.length === 0 ? (
         <Empty>
           <EmptyTitle>暂无学校事项</EmptyTitle>
@@ -46,6 +69,7 @@ export function SchoolBoard({ posts }: { posts: Post[] }) {
           <NoticeSection title="本周事项" posts={groups.week} />
           <NoticeSection title="全部通知" posts={groups.all} />
           <NoticeSection title="已过期" posts={groups.expired} />
+          {pagination}
         </div>
       )}
     </div>

@@ -177,11 +177,12 @@ ON DUPLICATE KEY UPDATE
 
 INSERT INTO attachments (id, post_id, filename, original_name, mime_type, size, path)
 VALUES
-  (1, 1, 'demo-public-note.pdf', 'demo-public-note.pdf', 'application/pdf', 102400, 'attachments/demo/demo-public-note.pdf'),
-  (2, 2, 'demo-private-runbook.pdf', 'demo-private-runbook.pdf', 'application/pdf', 102400, 'attachments/demo/demo-private-runbook.pdf'),
-  (3, 3, 'demo-unlisted-note.md', 'demo-unlisted-note.md', 'text/markdown', 4096, 'attachments/demo/demo-unlisted-note.md'),
-  (4, 4, 'demo-school-notice.pdf', 'demo-school-notice.pdf', 'application/pdf', 102400, 'attachments/demo/demo-school-notice.pdf')
+  (1, 1, 'demo-public-note.txt', 'demo-public-note.txt', 'text/plain', 160, '../docs/demo-attachments/demo-public-note.txt'),
+  (2, 2, 'demo-private-runbook.txt', 'demo-private-runbook.txt', 'text/plain', 170, '../docs/demo-attachments/demo-private-runbook.txt'),
+  (3, 3, 'demo-unlisted-note.md', 'demo-unlisted-note.md', 'text/markdown', 150, '../docs/demo-attachments/demo-unlisted-note.md'),
+  (4, 4, 'demo-school-notice.txt', 'demo-school-notice.txt', 'text/plain', 140, '../docs/demo-attachments/demo-school-notice.txt')
 ON DUPLICATE KEY UPDATE
+  filename = VALUES(filename),
   original_name = VALUES(original_name),
   mime_type = VALUES(mime_type),
   size = VALUES(size),
